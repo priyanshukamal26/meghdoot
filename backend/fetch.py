@@ -27,3 +27,19 @@ async def fetch_all_blocks():
         response = await client.get(url, params=params)
         response.raise_for_status()
         return response.json()
+
+async def fetch_point_weather_data(lat: float, lon: float):
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "hourly": "cape,convective_inhibition,relative_humidity_2m,cloud_cover,precipitation,surface_pressure,wind_gusts_10m",
+        "past_hours": "12",
+        "forecast_hours": "3",
+        "timezone": "Asia/Kolkata"
+    }
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        response.raise_for_status()
+        return response.json()

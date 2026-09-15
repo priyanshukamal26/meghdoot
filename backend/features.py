@@ -1,8 +1,8 @@
-def extract_features(hourly_data):
+def extract_features(hourly_data, now_idx=6):
     """
     Extracts features for a single location from the Open-Meteo hourly arrays.
-    With past_hours=6 and forecast_hours=3, the arrays have 10 elements.
-    Index 6 is 'now'.
+    With past_hours=6 and forecast_hours=3, the arrays have 10 elements and now_idx is 6.
+    With past_hours=12, now_idx is 12.
     """
     # Helper to safely get value or 0
     def get_val(key, idx):
@@ -10,8 +10,6 @@ def extract_features(hourly_data):
             return hourly_data.get(key, [])[idx] or 0.0
         except IndexError:
             return 0.0
-
-    now_idx = 6
     
     cape = get_val("cape", now_idx)
     cin = get_val("convective_inhibition", now_idx)
