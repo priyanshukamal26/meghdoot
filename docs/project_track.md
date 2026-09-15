@@ -107,3 +107,11 @@ repo scaffold, Neon schema, bharatlas+SRTM download, heuristic formula wired end
 - Type check and production build verified clean: `npm run build` (0 TypeScript/bundle errors).
 - Visual and responsive testing verified in browser via subagent across desktop (1536px), tablet, and mobile (375px) viewports with functioning interactive tabs, scenario state switching, and menu animations.
 
+---
+
+[Session 5] [DONE] **Sure-Shot Dashboard & Backend MVP Completed**:
+- **Backend**: Implemented a scoped-down FastAPI service (`main.py`, `cache.py`, `fetch.py`, `features.py`, `heuristic.py`, `narrative.py`, `blocks.py`) that polls Open-Meteo batch endpoint every 5 minutes and calculates risk using the Sure-Shot baseline heuristic formula.
+- **XAI Narrative**: Implemented best-effort XAI generation via Groq with templated fallback for robustness.
+- **Replay Data**: Successfully ran `generate_replay.py` to create `replay_data.json` simulating the August 2025 event for 10 fixed locations in Punjab/Haryana.
+- **Frontend Dashboard**: Added React Router to manage navigation. Created the Dashboard page using `react-leaflet`, custom colored markers based on active hazard layer (Thunderstorm/Cloudburst/Flash Flood), a sliding detail panel, and LIVE/REPLAY mode toggle.
+- **Verification**: Browser agent fully tested map interaction, Replay timeline slider, animated detail panel, and accurate extraction of the baseline scores, fulfilling the scoped MVP parameters.

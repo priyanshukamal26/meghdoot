@@ -21,8 +21,8 @@ gets overwritten to reflect current reality.
 | bharatlas boundaries (all India) | ⬜ not done | no friction, just execute |
 | SRTM DEM (all India bbox) | ⬜ not done | no friction, just execute |
 | Neon schema applied | ⬜ not done | run DDL from `05_database_schema.md` |
-| Heuristic formula wired end-to-end | ⬜ not done | backend feature builder & heuristic prediction |
-| Local dashboard running | ⬜ not done | Leaflet map with block polygons |
+| Heuristic formula wired end-to-end | ✅ DONE | implemented Sure-Shot baseline in backend |
+| Local dashboard running | ✅ DONE | MVP dashboard complete with live/replay modes |
 
 ## Immediate priority order
 1. **Submit MOSDAC signup** — 5 minutes, out of your hands after that. Do not wait for it —
@@ -98,3 +98,11 @@ docs (`01`, `03`, `10`, `11`, `MASTER_AGENT_BRIEF`) updated to be fully aware of
   6. IMD Severity Scale & NASA IMERG ground-truth verification standards.
   7. Extensive technical footer with system status and open science attribution.
 - Tested and verified: clean TypeScript build (`npm run build`), responsive layout across mobile, tablet, and desktop viewports.
+
+**[Current session / Session 5] Sure-Shot Dashboard + Backend MVP**:
+- Implemented a scoped-down FastAPI backend using in-memory state and a background polling loop over Open-Meteo's batch endpoint for 10 fixed locations.
+- Integrated the baseline heuristic scoring formula to calculate Thunderstorm, Cloudburst, and Flash Flood risk (using a placeholder terrain multiplier).
+- Wired in a best-effort XAI narrative generator via Groq (with templated fallbacks).
+- Generated offline Replay data (`replay_data.json`) for the August 2025 event.
+- Built the React/Vite Sure-Shot Dashboard UI with `react-leaflet`, custom severity markers, a sliding detail panel, and a functional LIVE/REPLAY mode toggle.
+- End-to-end verified with browser automation and local dev server.
