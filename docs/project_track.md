@@ -147,3 +147,10 @@ Both stay. Dashboard work uses `radar.*`. Landing page is frozen.
   (30.9686, 76.5262) is OFF-channel (max 0.78 m³/s). On-channel point (31.02, 76.48) gives
   max 360.4 m³/s with clear late-August spike (222 → 360). Near Bhakra (31.42, 76.43) gives
   max 798.8 m³/s. `river_point` coordinates needed per block in A1.
+
+[Session 7] [DONE] **Phase A MVP Build Plan Executed Successfully**:
+- **A1-A5 (Backend Core)**: 12 blocks + 20 upstream points registered. Elevation-based kinematic routing lag calculated. Batched Open-Meteo fetching implemented. Hydro upstream coupling and dry-sky flag fully implemented. `cache.py` rebuilt as a standalone background loop. 5 FastAPI endpoints verified clean.
+- **A6 (Hindcast)**: Ran historical forecast batch (Aug 15–Sep 5, 2025). Computed baseline alerts vs Meghdoot flash flood risk. Generated `replay_data.json` and `leadtime.json`. Confirmed honest representation (positive gains on Gurdaspur/Amritsar, zero/negative elsewhere).
+- **A7 (Dashboard)**: Updated React dashboard styling with `radar-*` token set. Implemented Block Detail Panel (Rows A–G) including live arrival countdown, horizontal contribution split bar, 3-row comparison block, vulnerable exposure details, and upstream routing table.
+- **A8 (Evidence)**: Built `/evidence` static route presenting the `leadtime.json` data as a scorecard with horizontal timeline visualisation.
+- All code committed in `master` branch. Zero TS errors. Backend verified with curl. Replay mode validated. Phase A MVP Definition of Done is fully satisfied.
