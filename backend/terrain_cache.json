@@ -1,0 +1,494 @@
+{
+  "1": {
+    "upstream": {
+      "bhakra": {
+        "distance_km": 49.9,
+        "elev_up": 492.0,
+        "elev_block": 288.0,
+        "slope": 0.003028,
+        "velocity_ms": 3.2,
+        "lag_hours": 3.51
+      },
+      "bilaspur": {
+        "distance_km": 46.4,
+        "elev_up": 561.0,
+        "elev_block": 288.0,
+        "slope": 0.004356,
+        "velocity_ms": 3.64,
+        "lag_hours": 2.87
+      },
+      "sunni": {
+        "distance_km": 63.5,
+        "elev_up": 633.0,
+        "elev_block": 288.0,
+        "slope": 0.004024,
+        "velocity_ms": 3.54,
+        "lag_hours": 4.04
+      },
+      "rampur": {
+        "distance_km": 117.8,
+        "elev_up": 944.0,
+        "elev_block": 288.0,
+        "slope": 0.004124,
+        "velocity_ms": 3.57,
+        "lag_hours": 7.43
+      }
+    },
+    "lag_hours": 4.46,
+    "arrival_window": [
+      3.96,
+      5.58
+    ]
+  },
+  "2": {
+    "upstream": {
+      "bilaspur": {
+        "distance_km": 98.6,
+        "elev_up": 561.0,
+        "elev_block": 252.0,
+        "slope": 0.002322,
+        "velocity_ms": 2.93,
+        "lag_hours": 7.57
+      },
+      "sunni": {
+        "distance_km": 125.3,
+        "elev_up": 633.0,
+        "elev_block": 252.0,
+        "slope": 0.002253,
+        "velocity_ms": 2.9,
+        "lag_hours": 9.73
+      },
+      "rampur": {
+        "distance_km": 179.4,
+        "elev_up": 944.0,
+        "elev_block": 252.0,
+        "slope": 0.002858,
+        "velocity_ms": 3.14,
+        "lag_hours": 12.86
+      },
+      "karcham": {
+        "distance_km": 230.7,
+        "elev_up": 1926.0,
+        "elev_block": 252.0,
+        "slope": 0.005374,
+        "velocity_ms": 3.93,
+        "lag_hours": 13.2
+      }
+    },
+    "lag_hours": 10.84,
+    "arrival_window": [
+      10.34,
+      13.55
+    ]
+  },
+  "3": {
+    "upstream": {
+      "bilaspur": {
+        "distance_km": 208.3,
+        "elev_up": 561.0,
+        "elev_block": 199.0,
+        "slope": 0.001287,
+        "velocity_ms": 2.44,
+        "lag_hours": 19.24
+      },
+      "rampur": {
+        "distance_km": 291.8,
+        "elev_up": 944.0,
+        "elev_block": 199.0,
+        "slope": 0.001891,
+        "velocity_ms": 2.74,
+        "lag_hours": 23.96
+      },
+      "mandi": {
+        "distance_km": 235.7,
+        "elev_up": 764.0,
+        "elev_block": 199.0,
+        "slope": 0.001776,
+        "velocity_ms": 2.69,
+        "lag_hours": 19.75
+      },
+      "pandoh": {
+        "distance_km": 245.6,
+        "elev_up": 978.0,
+        "elev_block": 199.0,
+        "slope": 0.002349,
+        "velocity_ms": 2.94,
+        "lag_hours": 18.81
+      }
+    },
+    "lag_hours": 20.44,
+    "arrival_window": [
+      19.94,
+      25.55
+    ]
+  },
+  "4": {
+    "upstream": {
+      "bilaspur": {
+        "distance_km": 280.5,
+        "elev_up": 561.0,
+        "elev_block": 183.0,
+        "slope": 0.000998,
+        "velocity_ms": 2.26,
+        "lag_hours": 27.88
+      },
+      "rampur": {
+        "distance_km": 362.7,
+        "elev_up": 944.0,
+        "elev_block": 183.0,
+        "slope": 0.001554,
+        "velocity_ms": 2.58,
+        "lag_hours": 31.67
+      },
+      "mandi": {
+        "distance_km": 312.3,
+        "elev_up": 764.0,
+        "elev_block": 183.0,
+        "slope": 0.001378,
+        "velocity_ms": 2.48,
+        "lag_hours": 28.28
+      },
+      "pong": {
+        "distance_km": 259.4,
+        "elev_up": 419.0,
+        "elev_block": 183.0,
+        "slope": 0.000674,
+        "velocity_ms": 2.04,
+        "lag_hours": 28.64
+      }
+    },
+    "lag_hours": 29.12,
+    "arrival_window": [
+      28.62,
+      36.4
+    ]
+  },
+  "5": {
+    "upstream": {
+      "pong": {
+        "distance_km": 48.8,
+        "elev_up": 419.0,
+        "elev_block": 309.0,
+        "slope": 0.001669,
+        "velocity_ms": 2.63,
+        "lag_hours": 4.17
+      },
+      "mandi": {
+        "distance_km": 98.6,
+        "elev_up": 764.0,
+        "elev_block": 309.0,
+        "slope": 0.00342,
+        "velocity_ms": 3.34,
+        "lag_hours": 6.64
+      },
+      "pandoh": {
+        "distance_km": 109.8,
+        "elev_up": 978.0,
+        "elev_block": 309.0,
+        "slope": 0.004513,
+        "velocity_ms": 3.69,
+        "lag_hours": 6.7
+      },
+      "kullu": {
+        "distance_km": 122.7,
+        "elev_up": 1235.0,
+        "elev_block": 309.0,
+        "slope": 0.00559,
+        "velocity_ms": 3.99,
+        "lag_hours": 6.92
+      }
+    },
+    "lag_hours": 6.11,
+    "arrival_window": [
+      5.61,
+      7.63
+    ]
+  },
+  "6": {
+    "upstream": {
+      "thein": {
+        "distance_km": 18.2,
+        "elev_up": 483.0,
+        "elev_block": 339.0,
+        "slope": 0.005877,
+        "velocity_ms": 4.0,
+        "lag_hours": 1.02
+      },
+      "basohli": {
+        "distance_km": 29.6,
+        "elev_up": 518.0,
+        "elev_block": 339.0,
+        "slope": 0.004479,
+        "velocity_ms": 3.68,
+        "lag_hours": 1.81
+      },
+      "chamba": {
+        "distance_km": 54.3,
+        "elev_up": 946.0,
+        "elev_block": 339.0,
+        "slope": 0.008278,
+        "velocity_ms": 4.0,
+        "lag_hours": 3.06
+      },
+      "bharmour": {
+        "distance_km": 84.5,
+        "elev_up": 2208.0,
+        "elev_block": 339.0,
+        "slope": 0.016388,
+        "velocity_ms": 4.0,
+        "lag_hours": 4.75
+      }
+    },
+    "lag_hours": 2.66,
+    "arrival_window": [
+      2.16,
+      3.32
+    ]
+  },
+  "7": {
+    "upstream": {
+      "thein": {
+        "distance_km": 52.5,
+        "elev_up": 483.0,
+        "elev_block": 268.0,
+        "slope": 0.003032,
+        "velocity_ms": 3.2,
+        "lag_hours": 3.69
+      },
+      "basohli": {
+        "distance_km": 64.1,
+        "elev_up": 518.0,
+        "elev_block": 268.0,
+        "slope": 0.002887,
+        "velocity_ms": 3.15,
+        "lag_hours": 4.58
+      },
+      "chamba": {
+        "distance_km": 88.6,
+        "elev_up": 946.0,
+        "elev_block": 268.0,
+        "slope": 0.005671,
+        "velocity_ms": 4.0,
+        "lag_hours": 4.98
+      },
+      "bharmour": {
+        "distance_km": 114.7,
+        "elev_up": 2208.0,
+        "elev_block": 268.0,
+        "slope": 0.012532,
+        "velocity_ms": 4.0,
+        "lag_hours": 6.45
+      }
+    },
+    "lag_hours": 4.93,
+    "arrival_window": [
+      4.43,
+      6.16
+    ]
+  },
+  "8": {
+    "upstream": {
+      "thein": {
+        "distance_km": 119.7,
+        "elev_up": 483.0,
+        "elev_block": 234.0,
+        "slope": 0.001541,
+        "velocity_ms": 2.57,
+        "lag_hours": 10.48
+      },
+      "chamba": {
+        "distance_km": 156.3,
+        "elev_up": 946.0,
+        "elev_block": 234.0,
+        "slope": 0.003374,
+        "velocity_ms": 3.32,
+        "lag_hours": 10.58
+      },
+      "bharmour": {
+        "distance_km": 180.1,
+        "elev_up": 2208.0,
+        "elev_block": 234.0,
+        "slope": 0.008118,
+        "velocity_ms": 4.0,
+        "lag_hours": 10.13
+      },
+      "pong": {
+        "distance_km": 118.5,
+        "elev_up": 419.0,
+        "elev_block": 234.0,
+        "slope": 0.001156,
+        "velocity_ms": 2.36,
+        "lag_hours": 11.3
+      }
+    },
+    "lag_hours": 10.62,
+    "arrival_window": [
+      10.12,
+      13.28
+    ]
+  },
+  "9": {
+    "upstream": {
+      "morni": {
+        "distance_km": 78.1,
+        "elev_up": 1091.0,
+        "elev_block": 257.0,
+        "slope": 0.007911,
+        "velocity_ms": 4.0,
+        "lag_hours": 4.39
+      },
+      "kalka": {
+        "distance_km": 76.8,
+        "elev_up": 694.0,
+        "elev_block": 257.0,
+        "slope": 0.004216,
+        "velocity_ms": 3.6,
+        "lag_hours": 4.8
+      },
+      "nahan": {
+        "distance_km": 90.9,
+        "elev_up": 876.0,
+        "elev_block": 257.0,
+        "slope": 0.005045,
+        "velocity_ms": 3.84,
+        "lag_hours": 5.32
+      },
+      "panchkula": {
+        "distance_km": 60.1,
+        "elev_up": 343.0,
+        "elev_block": 257.0,
+        "slope": 0.00106,
+        "velocity_ms": 2.3,
+        "lag_hours": 5.87
+      }
+    },
+    "lag_hours": 5.1,
+    "arrival_window": [
+      4.6,
+      6.37
+    ]
+  },
+  "10": {
+    "upstream": {
+      "morni": {
+        "distance_km": 129.9,
+        "elev_up": 1091.0,
+        "elev_block": 244.0,
+        "slope": 0.004831,
+        "velocity_ms": 3.78,
+        "lag_hours": 7.73
+      },
+      "kalka": {
+        "distance_km": 124.2,
+        "elev_up": 694.0,
+        "elev_block": 244.0,
+        "slope": 0.002684,
+        "velocity_ms": 3.07,
+        "lag_hours": 9.09
+      },
+      "nahan": {
+        "distance_km": 144.1,
+        "elev_up": 876.0,
+        "elev_block": 244.0,
+        "slope": 0.003248,
+        "velocity_ms": 3.28,
+        "lag_hours": 9.89
+      },
+      "panchkula": {
+        "distance_km": 109.6,
+        "elev_up": 343.0,
+        "elev_block": 244.0,
+        "slope": 0.000669,
+        "velocity_ms": 2.03,
+        "lag_hours": 12.12
+      }
+    },
+    "lag_hours": 9.71,
+    "arrival_window": [
+      9.21,
+      12.13
+    ]
+  },
+  "11": {
+    "upstream": {
+      "morni": {
+        "distance_km": 45.6,
+        "elev_up": 1091.0,
+        "elev_block": 273.0,
+        "slope": 0.013299,
+        "velocity_ms": 4.0,
+        "lag_hours": 2.56
+      },
+      "kalka": {
+        "distance_km": 53.8,
+        "elev_up": 694.0,
+        "elev_block": 273.0,
+        "slope": 0.005791,
+        "velocity_ms": 4.0,
+        "lag_hours": 3.03
+      },
+      "nahan": {
+        "distance_km": 53.7,
+        "elev_up": 876.0,
+        "elev_block": 273.0,
+        "slope": 0.008315,
+        "velocity_ms": 4.0,
+        "lag_hours": 3.02
+      },
+      "panchkula": {
+        "distance_km": 36.3,
+        "elev_up": 343.0,
+        "elev_block": 273.0,
+        "slope": 0.00143,
+        "velocity_ms": 2.51,
+        "lag_hours": 3.25
+      }
+    },
+    "lag_hours": 2.97,
+    "arrival_window": [
+      2.47,
+      3.71
+    ]
+  },
+  "12": {
+    "upstream": {
+      "paonta": {
+        "distance_km": 48.4,
+        "elev_up": 397.0,
+        "elev_block": 278.0,
+        "slope": 0.001821,
+        "velocity_ms": 2.71,
+        "lag_hours": 4.02
+      },
+      "dakpathar": {
+        "distance_km": 69.5,
+        "elev_up": 540.0,
+        "elev_block": 278.0,
+        "slope": 0.002793,
+        "velocity_ms": 3.11,
+        "lag_hours": 5.02
+      },
+      "nahan": {
+        "distance_km": 48.0,
+        "elev_up": 876.0,
+        "elev_block": 278.0,
+        "slope": 0.009223,
+        "velocity_ms": 4.0,
+        "lag_hours": 2.7
+      },
+      "renuka": {
+        "distance_km": 56.3,
+        "elev_up": 685.0,
+        "elev_block": 278.0,
+        "slope": 0.005357,
+        "velocity_ms": 3.93,
+        "lag_hours": 3.22
+      }
+    },
+    "lag_hours": 3.74,
+    "arrival_window": [
+      3.24,
+      4.68
+    ]
+  }
+}
