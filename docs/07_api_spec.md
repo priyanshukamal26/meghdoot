@@ -58,6 +58,43 @@ Active alerts feed, filterable. Used by the Alerts page.
 ### `GET /api/v1/alerts/{id}`
 Single alert detail (for the Alert Detail modal).
 
+### `GET /api/v1/geocode?q={query}`
+Proxy over Open-Meteo's Geocoding API. Prioritizes Indian locations (`country_code == "IN"`).
+Used by the Dashboard search bar to resolve place names/PIN codes to coordinates.
+```json
+{
+  "data_mode": "live",
+  "results": [
+    {"name": "Ludhiana", "admin1": "Punjab", "country": "India",
+     "latitude": 30.901, "longitude": 75.8573, "postal_code": "141001"}
+  ]
+}
+```
+
+### `GET /api/v1/analyze?lat={lat}&lon={lon}&name={optional display name}`
+On-demand full-pipeline endpoint for a specific coordinate. Fetches live data, derives features, runs heuristic risk scoring, and generates an XAI narrative (both trigger narrative and AI overview) using Groq. Includes a `within_validated_core` honesty flag.
+```json
+{
+  "data_mode": "live",
+  "location": {"name": "Ludhiana, Punjab", "lat": 30.901, "lon": 75.8573},
+  "generated_at": "2026-09-15T18:42:00+05:30",
+  "within_validated_core": true,
+  "risk": {
+    "p_thunderstorm": 0.31, "p_cloudburst": 0.58,
+    "flash_flood_risk": 0.44, "severity": "Orange",
+    "is_baseline_heuristic": true
+  },
+  "features_snapshot": {"cape": 1980, "cin": -22, "humidity_proxy": 41.2,
+    "cloud_trend": -3.1, "rainfall_recent": 6.4, "pressure_trend_3h": 14.2,
+    "gusts": 6.4},
+  "xai": {
+    "top_features": [{"feature": "cape", "contribution": 0.38}],
+    "trigger_narrative": "Elevated risk driven by rapid CAPE buildup.",
+    "ai_overview": "Conditions over Ludhiana have intensified over the past two hours..."
+  }
+}
+```
+
 ### `GET /api/v1/replay/{event_name}/frames`
 e.g. `event_name = "aug_2025_punjab_floods"`. Returns the full pre-baked frame sequence from
 `replay_events` — the frontend steps through this locally, no further backend calls needed once
