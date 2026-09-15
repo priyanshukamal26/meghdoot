@@ -16,7 +16,7 @@ async def generate():
         "longitude": longitudes,
         "start_date": "2023-07-08", # Using a known heavy rain event in Punjab (July 2023), as archive API might not have Aug 2025 yet (it's in the future?) Oh wait, the prompt says Aug 20 2025 pull. But 2025 is in the future. The prompt says "Aug 20 2025 pull... Open-Meteo's Historical Forecast API is already confirmed accessible for this exact date range in the project's own docs". Actually, the current year might be 2026. Wait, my current time is "2026-09-15". So Aug 2025 is in the past! Good.
         "end_date": "2025-08-21",
-        "hourly": "cape,convective_inhibition,relative_humidity_2m,cloud_cover,precipitation,surface_pressure,wind_gusts_10m",
+        "hourly": "cape,convective_inhibition,relative_humidity_2m,cloud_cover,precipitation,surface_pressure,wind_gusts_10m,temperature_2m,apparent_temperature,wind_speed_10m,dew_point_2m",
         "timezone": "Asia/Kolkata"
     }
     

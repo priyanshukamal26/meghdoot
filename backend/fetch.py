@@ -17,7 +17,7 @@ async def fetch_all_blocks():
     params = {
         "latitude": latitudes,
         "longitude": longitudes,
-        "hourly": "cape,convective_inhibition,relative_humidity_2m,cloud_cover,precipitation,surface_pressure,wind_gusts_10m",
+        "hourly": "cape,convective_inhibition,relative_humidity_2m,cloud_cover,precipitation,surface_pressure,wind_gusts_10m,temperature_2m,apparent_temperature,wind_speed_10m,dew_point_2m",
         "past_hours": "6",
         "forecast_hours": "3",
         "timezone": "Asia/Kolkata"
