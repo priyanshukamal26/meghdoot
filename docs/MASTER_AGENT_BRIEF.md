@@ -190,6 +190,7 @@ probability    probability    (mm/hr, regression)
 
 **Phase 1 — Foundation & Live Data Contracts**
 Access situation is resolved. Frontend repository initialized with landing page feature complete.
+Backend MVP and Sure-Shot Dashboard complete.
 
 | Item | Status |
 |---|---|
@@ -200,7 +201,9 @@ Access situation is resolved. Frontend repository initialized with landing page 
 | MOSDAC signup | ⬜ **submit today** |
 | bharatlas + SRTM download | ⬜ no friction, just execute |
 | Neon schema applied | ⬜ |
-| Heuristic formula wired end-to-end | ⬜ Phase 1 finish line |
+| Heuristic formula wired end-to-end | ✅ |
+| Local dashboard MVP | ✅ Phase 1 finish line crossed |
+| Location Search Pipeline | 🔄 In Progress |
 
 ---
 
