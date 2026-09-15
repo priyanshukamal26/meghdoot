@@ -123,3 +123,27 @@ repo scaffold, Neon schema, bharatlas+SRTM download, heuristic formula wired end
 - **Weather Fetching**: Extended `fetch.py` with `fetch_point_weather_data` to support fetching a 12-hour history window for arbitrary lat/lon coordinates.
 - **Feature Extraction**: Updated `features.py` to accept dynamic `now_idx` to support the extended 12-hour timeline required by the search pipeline.
 - **AI Narrative**: Extended `narrative.py` with `generate_ai_overview` for on-demand synthesis, generating both a single-sentence trigger narrative and a multi-sentence plain English trend overview via a single Groq JSON prompt.
+
+---
+
+[Session 7] **Strategic reset after hostile plan screening.**
+See `13_DIFFERENTIATION_AND_JUDGE_DEFENCE.md` for full thesis and `14_PHASE_A_MVP_BUILD_PLAN.md`
+for sequential build plan.
+
+[Session 7] [TOKEN CONFLICT RESOLVED] Both `radar.*` and `brand.*` token sets coexist in
+`tailwind.config.js`. **`radar.*`** (#0B1220 / #121B2E / #5FA8D3) is used by the Dashboard
+(Session 5). **`brand.*`** (#0A0A0A / #171717 / #F59E0B) is used by the Landing Page (Session 4).
+Both stay. Dashboard work uses `radar.*`. Landing page is frozen.
+
+[Session 7] [DONE] **A0 — Smoke tests passed (all four APIs confirmed)**:
+- **A0.1 Batched Forecast**: ✅ JSON array of 4 objects, each with `hourly.precipitation`.
+  Timezone `Asia/Kolkata` confirmed. Rupnagar elevation 288.0 m.
+- **A0.2 Elevation API**: ✅ `{'elevation': [288.0, 492.0, 561.0, 944.0]}`.
+  Rupnagar ~288m, Bhakra ~492m, Bilaspur ~561m, Rampur ~944m. All upstream > block. Correct.
+- **A0.3 Historical Forecast API**: ✅ `historical-forecast-api.open-meteo.com` returns hourly
+  arrays with real (non-null) precipitation for Aug 2025. 72 hours, max 14.6 mm/h. Schema
+  matches live.
+- **A0.4 Flood API (GloFAS)**: ✅ Returns daily `river_discharge` in m³/s. Centroid coordinate
+  (30.9686, 76.5262) is OFF-channel (max 0.78 m³/s). On-channel point (31.02, 76.48) gives
+  max 360.4 m³/s with clear late-August spike (222 → 360). Near Bhakra (31.42, 76.43) gives
+  max 798.8 m³/s. `river_point` coordinates needed per block in A1.

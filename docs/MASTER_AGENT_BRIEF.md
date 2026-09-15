@@ -1,30 +1,47 @@
 # MEGHDOOT — MASTER AGENT BRIEF
 > Single source of truth for any AI agent working this project.
-> Read this first. Then read `10_status_and_plan.md`. Then act.
+> Read this → then `13_DIFFERENTIATION_AND_JUDGE_DEFENCE.md` → then `10_status_and_plan.md` → then act.
+> **Updated Session 7.**
 
 ---
 
 ## WHAT IS THIS
 
 **Meghdoot** (मेघदूत — "cloud messenger", after Kalidasa's poem) is an AI-driven hyper-local
-early warning system for severe weather nowcasting built for **Smart India Hackathon 2024,
+early warning system for severe weather nowcasting, built for **Smart India Hackathon,
 Problem Statement SIH26077**, sponsored by the **Ministry of Earth Sciences / NCMRWF**.
 
-It predicts thunderstorms, cloudbursts, and flash floods **2–6 hours in advance** across
-**all of India** using spatiotemporal deep learning — not physics simulation. Model is trained
-and validated on North India belt events; all-India map coverage is displayed with that caveat
-clearly stated on the About page.
+It predicts thunderstorms, cloudbursts and flash floods **2–6 hours in advance** across India.
+Model trained and validated on the North India belt; all-India map coverage displayed with that
+caveat stated on the About page.
 
 The sponsor (NCMRWF) built IMDAA themselves. They will see through a generic submission.
-Everything is documented, traceable, and honest about its trade-offs.
+Everything is documented, traceable and honest about its trade-offs.
+
+---
+
+## THE THESIS — READ THIS BEFORE ANY DESIGN DECISION
+
+> **Meghdoot does not forecast weather. It forecasts arrival and impact.**
+
+A flash flood in Rupnagar is not caused by rain **in** Rupnagar. It is caused by rain 100 km
+**upstream** in Himachal, hours earlier. When the water arrives, the sky overhead can be clear.
+A point-forecast app has no concept of a catchment and **structurally cannot show this**.
+
+That gap is the product. It is also exactly what the PS asks for: DEM-based flash-flood
+translation and an alert API for disaster responders.
+
+**Never argue that Meghdoot forecasts the atmosphere better than Open-Meteo, IMD or Google.**
+That argument is unwinnable. Argue that forecasting the atmosphere and forecasting the impact
+are different problems. Full reasoning, demo script and rehearsed answers:
+`13_DIFFERENTIATION_AND_JUDGE_DEFENCE.md`.
 
 ---
 
 ## THE ONE RULE THAT OVERRIDES EVERYTHING
 
-**Local first. Deploy only on the final day.**
-Neon Postgres is a DB connection — live from Day 1. Vercel/Render deployment happens only
-when `09_dev_and_deployment.md` explicitly says "deploy now."
+**Local first. Deploy only on the final day.** Neon Postgres is a DB connection, not hosting.
+Vercel/Render deployment happens only when `09_dev_and_deployment.md` says "deploy now".
 
 ---
 
@@ -35,12 +52,14 @@ when `09_dev_and_deployment.md` explicitly says "deploy now."
 | PS number | SIH26077 |
 | Sponsor | MoES / NCMRWF |
 | Map coverage | All India (68.0°E, 8.0°N → 97.5°E, 37.5°N) |
-| Training/validation focus | Punjab + Haryana + Delhi NCT (North India belt) |
+| Monitored blocks (Phase A) | 12, across the Sutlej / Beas / Ravi / Ghaggar / Yamuna systems |
+| Upstream sampling points | 20, in the Shivalik and Himachal headwaters |
+| Training / validation focus | North India belt |
 | Hazards | Severe thunderstorms · Cloudbursts · Flash floods |
 | Lead time | 2–6 hours |
-| Model | Per-block GRU/MLP over tabular features (not ConvLSTM — see §ARCHITECTURE) |
+| Model | Per-block GRU/MLP over tabular features **+ upstream catchment coupling** |
 | Cost | Free tier only, no credit card anywhere |
-| Stack | Next.js (Vercel) + FastAPI (Render) + Neon Postgres + Groq (XAI) |
+| Stack | Vite + React + TS + Tailwind · FastAPI · (Neon, deferred) · Groq |
 
 ---
 
@@ -48,195 +67,144 @@ when `09_dev_and_deployment.md` explicitly says "deploy now."
 
 | File | Read when you need to… |
 |---|---|
-| **`00_START_HERE.md`** | Get a 2-minute overview |
-| **`01_problem_and_scope.md`** | PS requirements, PS→implementation traceability, MVP checklist, three documented deviations |
-| **`02_architecture_and_stack.md`** | System architecture, data flow, schema-consistency rule, all services |
-| **`03_data_sources.md`** | Every data source: confirmed, dead, or pending. Read before any data pipeline code. |
-| **`04_region_scope.md`** | All-India map vs North India training focus, district list, demo events |
-| **`05_database_schema.md`** | Full Postgres DDL. Read before any DB code. |
-| **`06_ml_model_spec.md`** | Model architecture, features, label strategy, XAI approach |
-| **`07_api_spec.md`** | Every FastAPI route, cron cadences, fallback logic |
-| **`08_frontend_and_design.md`** | Every page, popup, user flow, design system |
-| **`09_dev_and_deployment.md`** | Local setup (do first every session) + final-day deployment |
-| **`10_status_and_plan.md`** | **THE LIVE TRACKER. Read every session. Update at end of session.** |
-| **`11_fallback_playbook.md`** | 14 failure modes with detect/fallback/escalation |
-| **`12_glossary.md`** | Meteorological and technical terms |
+| `00_START_HERE.md` | 2-minute overview |
+| `01_problem_and_scope.md` | PS text, traceability, MVP checklist, three deviations |
+| `02_architecture_and_stack.md` | Architecture, data flow, schema-consistency rule |
+| `01_SURE_SHOT_DASHBOARD_DESIGN.md` / `02_SURE_SHOT_BACKEND_DESIGN.md` | The scoped MVP built in Session 5 — still the base being extended |
+| **`03_data_sources.md`** | Every source. **Rewritten Session 7.** Read before any data code. |
+| `04_region_scope.md` | Region, districts, demo events |
+| `05_database_schema.md` | Postgres DDL (+ Session 7 additions in `15` §B8) |
+| `06_ml_model_spec.md` | Model architecture, features, labels, XAI |
+| `07_api_spec.md` | Routes, cron, fallback logic |
+| `08_frontend_and_design.md` | Pages, flows, design system |
+| `09_dev_and_deployment.md` | Local setup + final-day deployment |
+| **`10_status_and_plan.md`** | **THE LIVE TRACKER. Read every session. Update at end.** |
+| `11_fallback_playbook.md` | Failure modes with detect/fallback |
+| `12_glossary.md` | Meteorological and technical terms |
+| **`13_DIFFERENTIATION_AND_JUDGE_DEFENCE.md`** | **The thesis, demo script, rehearsed answers.** |
+| **`14_PHASE_A_MVP_BUILD_PLAN.md`** | **Sequential ~3h30 differentiation build.** |
+| **`15_PHASE_B_DEPTH_BUILD_PLAN.md`** | **Sequential depth build through deployment.** |
+| `16_ANTIGRAVITY_KICKOFF_PROMPT.md` | Agent kickoff prompt |
+| `LOCATION_SEARCH_PIPELINE_PLAN.md` | On-demand analyse endpoint (backend done, frontend deferred) |
 
 ---
 
-## DATA SOURCE STATUS — CURRENT
+## DATA SOURCE STATUS — SESSION 7
 
-**Confirmed build decision: the system is built entirely on Open-Meteo for now.** This is not a
-temporary patch — it's the committed architecture until/unless MOSDAC access is approved AND
-proven automatable. Full detailed rationale for every source below lives in `03_data_sources.md` —
-read it before touching any data pipeline code, especially before reconsidering any "dead" source.
+Four independent families now, not one.
 
 | Source | Status | Role |
 |---|---|---|
-| Open-Meteo (live + historical) | ✅ CONFIRMED WORKING | Sole backbone: live features, training data, AND labels |
-| SRTM DEM | ⬜ not downloaded | Flash-flood overlay |
-| bharatlas LGD 2024 | ⬜ not downloaded | Block boundaries (all India) |
-| MOSDAC | ⬜ SIGNUP NOT SUBMITTED — submit, don't wait on it | Would provide real TPW(IWV)/CTT from INSAT — see below |
-| IMD API | 🔴 OFFICIALLY DENIED | Was alert cross-check only. System works without it. |
-| NASA IMERG / EarthData | 🔴 ABANDONED | Platform malfunctioning. Replaced by Open-Meteo labels. |
-| IMDAA | 🔴 DROPPED | No live API path. Replaced by Open-Meteo CAPE/CIN. |
-| Raw ERA5 | 🔴 REJECTED | 5-day latency. Architecturally dead. |
+| Open-Meteo Forecast | ✅ WORKING | Live atmosphere, 32 coords in one batched call |
+| Open-Meteo **Historical Forecast** | ✅ WORKING | Training + hindcast. **Hostname is `historical-forecast-api.open-meteo.com`** — `archive-api` is ERA5, a different product |
+| Open-Meteo **Elevation** | ✅ NEW | Terrain for kinematic-wave routing lag. 100 coords/call, no key |
+| Open-Meteo **Flood (GloFAS)** | ✅ NEW | River discharge m³/s. Modelled, daily, ~5 km. **Points must sit on the channel** |
+| Open-Meteo Geocoding | ✅ WORKING | Location search |
+| **MOSDAC / INSAT-3D** | ✅ **ACCESS OBTAINED** | TPW (IWV) + CTT. HDF5, batch `mdapi` tool, predictable filenames. **Batch, not a stream** |
+| SRTM DEM | ⬜ Phase B | pysheds flow accumulation |
+| bharatlas LGD | ⬜ deferred | Block polygons |
+| CWC reservoir | ⬜ optional | Reservoir headroom, the real Aug 2025 amplifier |
+| IMD API | 🔴 DENIED | We use published IMD *colour thresholds* only, labelled as such |
+| NASA IMERG / EarthData | 🔴 ABANDONED | Partial recovery possible via MOSDAC IMSRA / GSMap |
+| IMDAA | 🔴 DROPPED | Replaced by Open-Meteo CAPE/CIN |
+| Raw ERA5 direct | 🔴 REJECTED | 5-day latency |
 
-**What MOSDAC would specifically provide, if it comes through:**
-- TPW (Total Precipitable Water = IWV) from INSAT-3D Water Vapor channel — the PS's "cornerstone"
-- CTT (Cloud Top Temperature) drop rate from INSAT-3D Thermal Infrared channel
-- Why it's not wired in yet: account approval pending (email, not instant), and even once
-  approved the URL pattern/file format/actual cadence for automation is unconfirmed. Do not build
-  a poller around it until a manual single-file test confirms it's automatable.
-- If it comes through and is automatable: `ctt_is_proxy` flips to false, real fields replace the
-  Open-Meteo proxy through the same code path. This closes most of PS deviation #2.
-
-**Why single-source is still defensible, not just a fallback**: zero train/inference schema
-drift, one external dependency to fail at demo time instead of four, full reproducibility for
-judges with no data-access approvals needed. The honest cost: IWV/CTT from Open-Meteo model
-output is not the same fidelity as satellite-observed INSAT data, and Open-Meteo CAPE/CIN is not
-IMDAA-radiosonde-derived. State this plainly on the About page — do not let a judge discover it.
+**Why the multi-source story is now true without breaking schema consistency:** the *model input*
+path is still single-source (Open-Meteo, identical schema live and historical), so there is still
+zero train/inference drift. GloFAS, INSAT and terrain enter as **independent corroboration and
+impact translation**, not as competing training inputs.
 
 ---
 
-## ARCHITECTURE — THE DECISION THAT MATTERS MOST
+## ARCHITECTURE
 
 ### What we do
-**Per-block time-series GRU/MLP over tabular features** from Open-Meteo.
+Per-block time-series GRU/MLP over tabular features **plus an upstream catchment coupling layer**
+that routes upstream rainfall to each block using an elevation-derived travel time.
 
 ### Why (judge answer)
 A spatial-grid ConvLSTM needs perfectly-aligned multi-source raster sequences from
-IMDAA + MOSDAC + INSAT. That's multi-terabyte, manual, approval-gated. The per-block approach
-uses one Open-Meteo call per block per timestep, same schema for training and inference,
-trainable in hours not days.
+IMDAA + MOSDAC + INSAT — multi-terabyte, manual, approval-gated. The per-block approach uses one
+batched API call, the same schema for training and inference, and trains in hours not days.
 
-### What's preserved (the science)
-- ✅ Three physical precursor categories: moisture (IWV proxy) + instability (CAPE/CIN) + lift (convergence/shear)
-- ✅ Multi-task: shared GRU encoder → 3 heads (thunderstorm / cloudburst / rain intensity)
-- ✅ CTT drop rate as validation signal (Open-Meteo cloud-cover proxy; MOSDAC if approved)
-- ✅ DEM overlay (SRTM + pysheds)
-- ✅ XAI (SHAP-lite → Groq)
+### What's preserved
+Three physical precursor categories (moisture / instability / lift) · multi-task shared encoder →
+3 heads · CTT drop rate · DEM overlay · XAI (SHAP-lite → Groq).
 
 ### What changed (own it)
-- ❌ Satellite grids → ✅ Per-block tabular features
-- ❌ ConvLSTM/transformer → ✅ GRU/MLP
-- ❌ INSAT WV/TIR channels → ✅ Open-Meteo humidity/cloud proxy (unless MOSDAC approved)
+Satellite grids → per-block tabular features · ConvLSTM → GRU/MLP · INSAT channels → Open-Meteo
+proxy **except where a real MOSDAC granule was read**.
 
-### Three documented PS deviations (state on About page, never hide)
-1. GRU/MLP instead of spatiotemporal transformer
-2. IWV/CTT from Open-Meteo proxy instead of INSAT satellite (unless MOSDAC approved)
-3. IMDAA replaced by Open-Meteo CAPE/CIN
+### Three documented PS deviations (state on About page)
+1. GRU/MLP instead of spatiotemporal transformer.
+2. IWV/CTT from Open-Meteo proxy — **now partially closed** by real INSAT-3D ingest.
+3. IMDAA replaced by Open-Meteo CAPE/CIN.
 
 ---
 
-## MODEL PIPELINE
+## THE ROUTING METHOD (new, Session 7 — memorise this)
+
+For each (upstream point → block) pair:
 
 ```
-Input: [batch, 6 timesteps, 7 features] per block
-  cape | cin | iwv_proxy | ctt_drop_rate | convergence_850 | wind_shear | rainfall_recent
-          ↓
-    GRU shared encoder (try MLP too; keep whichever validates better)
-          ↓
-    Shared dense layer
-     ↙           ↓            ↘
-Head 1         Head 2         Head 3
-thunderstorm   cloudburst     rain intensity
-probability    probability    (mm/hr, regression)
-(sigmoid)      (sigmoid)           ↓
-                         × flow_accumulation_weight (static SRTM)
-                                   ↓
-                           flash_flood_risk (per block)
+L        = haversine_km × 1.35            # sinuosity, Himalayan foreland rivers
+S        = (elev_up − elev_block) / (L × 1000)
+v        = clip(1.0 + 40·√S, 0.8, 4.0)    # m/s, Manning-type
+c        = (5/3)·v                        # kinematic-wave celerity, wide channel
+lag_h    = L·1000 / (c·3600)
 ```
+Block lag = mean over its four upstream points. Arrival window = lag ± 25%, floor ±0.5 h.
 
-**Labels (from Open-Meteo precipitation proxy):**
-- `cloudburst`: >50mm in rolling 3hr window
-- `thunderstorm`: lower CAPE + rainfall combined threshold
-- `rain_intensity`: continuous mm/hr value
-
-**Validate labels on Aug 20 2025 (flood onset date) before trusting them.**
-
----
-
-## DATABASE — TABLE SUMMARY
-
-| Table | Role |
-|---|---|
-| `districts` | Districts in scope |
-| `blocks` | All-India LGD polygons |
-| `weather_snapshots` | Raw poller output per API call |
-| `features` | Derived feature row per block per timestep |
-| `predictions` | Model output: 3 heads + flash_flood_risk |
-| `alerts` | Written only on threshold crossing |
-| `xai_explanations` | Groq narrative per alert, generated once, cached forever |
-| `replay_events` | Pre-baked historical frames. Zero live calls at demo. |
-| `api_health_log` | Poll health per source — powers /status page |
-
----
-
-## FRONTEND — PAGES
-
-| Page | Purpose |
-|---|---|
-| `/` | Landing: full video hero, live stat strip, Mission, Triad heads, Live XAI Telemetry, Pipeline, Impact, Footer |
-| `/dashboard` | Full-bleed all-India Leaflet map. Block polygons by risk. LIVE/REPLAY badge always visible. |
-| Block detail panel | Risk + 6-timestep sparkline + XAI narrative + alert badge |
-| `/alerts` | Severity-sorted filterable list |
-| `/about` | PS traceability, honest data labels, three documented deviations, training region caveat |
-| `/status` | Live health per source. Judge transparency + team debug. |
-
----
-
-## CURRENT PHASE STATUS
-
-**Phase 1 — Foundation & Live Data Contracts**
-Access situation is resolved. Frontend repository initialized with landing page feature complete.
-Backend MVP and Sure-Shot Dashboard complete.
-
-| Item | Status |
-|---|---|
-| Open-Meteo confirmed working | ✅ |
-| IMD / IMERG / IMDAA | 🔴 all dead, decisions made |
-| Repo scaffolded (Vite + React + TS + Tailwind) | ✅ |
-| Landing page (Hero + Extensive Sections) | ✅ |
-| MOSDAC signup | ⬜ **submit today** |
-| bharatlas + SRTM download | ⬜ no friction, just execute |
-| Neon schema applied | ⬜ |
-| Heuristic formula wired end-to-end | ✅ |
-| Local dashboard MVP | ✅ Phase 1 finish line crossed |
-| Location Search Pipeline | 🔄 In Progress |
-
----
-
-## FALLBACK HIERARCHY
-
-Full detail in `11_fallback_playbook.md`. Short version:
-
-1. MOSDAC not approved → IWV/CTT stay on Open-Meteo proxy, labeled
-2. Open-Meteo labels give poor validation → ship heuristic as primary
-3. Venue network dead → Replay mode, zero internet required
-4. Render cold start → UptimeRobot + local uvicorn fallback
-5. Trained model weak → heuristic as `is_baseline_heuristic=true`, stated honestly
-6. All-India too heavy → narrow live polling to North India belt, greyed blocks elsewhere
+Labelled in the UI as **"lumped kinematic-wave routing estimate; DEM flow routing pending"**
+until `15` §B5 replaces it with DEM-traced channel lengths.
 
 ---
 
 ## WHAT NEVER CHANGES
 
-- `data_mode` on every API response — frontend always knows what it's seeing
-- `ctt_is_proxy` flag — data honesty, visible to judges
-- `is_baseline_heuristic` flag — same
-- `&timezone=Asia/Kolkata` on every Open-Meteo call — tested bug risk, non-negotiable
-- Replay mode survives zero internet — demo floor, never regress
-- Three PS deviations stated on About page — judges respect honesty
+- `data_mode` on every response — `live` / `cached_fallback` / `replay` / `starting_up`
+- `is_baseline_heuristic` — true until a trained model demonstrably beats the heuristic
+- `ctt_is_proxy` — false **only** for timestamps where a real MOSDAC granule was read; never
+  blanket-flipped
+- `reservoir_state_modelled` — false until CWC data is integrated
+- `routing_method` — `kinematic_estimate` | `dem_routed`
+- `is_demo_data` on exposure records
+- `within_validated_core` on any ad-hoc point query
+- `&timezone=Asia/Kolkata` on every Open-Meteo call — build-failing test required
+- Replay mode survives zero internet — the demo floor, never regress
+- The scorecard baseline is **"rainfall-threshold alert on the same forecast data"**, never
+  "what IMD would have said"
+- The IMD row is **"IMD colour scale applied to forecast rainfall"**, never "IMD's warning"
+- The lead-time scorecard **includes at least one block where we did poorly**
+- Three PS deviations stated on the About page
+
+---
+
+## FALLBACK HIERARCHY
+
+1. MOSDAC granule unreadable → `3DIMG_L1B_STD` TIR-1 brightness temperature as direct CTT proxy
+2. Historical Forecast API down → `archive-api` ERA5, **labelled as reanalysis-derived**
+3. GloFAS point returns null → the point is off-channel; nudge onto the river, or drop the row
+4. pysheds too slow/noisy → slope-weighted intensity, no full flow routing (`11` #13)
+5. Trained model weak → heuristic ships with `is_baseline_heuristic=true`, stated honestly
+6. Groq down/slow → template narrative, always
+7. Venue network dead → Replay mode, zero internet
+8. Render cold start → UptimeRobot + local uvicorn
+9. Nothing dramatic happening live in September → expected, not a failure; Replay carries the
+   narrative (`11` #9)
 
 ---
 
 ## AGENT RULES
 
-1. Read `10_status_and_plan.md` before every session
-2. Update `10_status_and_plan.md` at end of every session
-3. One fact lives in one file — no duplication
-4. Test before building on top of anything
-5. Never substitute silently — label every fallback
-6. Deployment is final-day only
-7. Own the trade-offs — never apologize for them
+1. Read `13_DIFFERENTIATION_AND_JUDGE_DEFENCE.md` and `10_status_and_plan.md` before every session
+2. Work `14` then `15` **sequentially**. Do not skip steps. Every step has a VERIFY gate.
+3. **Run the build after every change.** `npm run build` exits 0 and the backend imports clean,
+   or the step is not done. Commit only green states.
+4. Update `10_status_and_plan.md` and `project_track.md` at end of every session
+5. One fact lives in one file — no duplication
+6. Test before building on top of anything
+7. **Never substitute silently — label every fallback**
+8. Deployment is final-day only
+9. Own the trade-offs — never apologise for them
+10. **Never let a model-generated narrative emit a number that is not in its input payload**
