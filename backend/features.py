@@ -33,14 +33,6 @@ def extract_features(hourly_data):
     
     gusts = get_val("wind_gusts_10m", now_idx)
     
-    # New detailed metrics
-    temp = get_val("temperature_2m", now_idx)
-    temp_3h_ago = get_val("temperature_2m", now_idx - 3)
-    
-    app_temp = get_val("apparent_temperature", now_idx)
-    wind_speed = get_val("wind_speed_10m", now_idx)
-    dew_point = get_val("dew_point_2m", now_idx)
-
     return {
         "cape": cape,
         "cin": cin,
@@ -49,19 +41,5 @@ def extract_features(hourly_data):
         "rainfall_recent": rainfall_recent,
         "rainfall_forecast_3h": rainfall_forecast_3h,
         "pressure_trend_3h": pressure_trend_3h,
-        "gusts": gusts,
-        
-        # Extended details for UI
-        "extended": {
-            "Temperature": f"{temp:.1f}°C",
-            "Temp Trend (3h)": f"{temp - temp_3h_ago:+.1f}°C",
-            "Feels Like": f"{app_temp:.1f}°C",
-            "Dew Point": f"{dew_point:.1f}°C",
-            "Wind Speed": f"{wind_speed:.1f} km/h",
-            "Wind Gusts": f"{gusts:.1f} km/h",
-            "Pressure Trend": f"{pressure_trend_3h:+.1f} hPa (falling is bad)",
-            "3hr Rain": f"{rainfall_recent:.1f} mm",
-            "CAPE": f"{cape:.0f} J/kg",
-            "CIN": f"{cin:.0f} J/kg"
-        }
+        "gusts": gusts
     }

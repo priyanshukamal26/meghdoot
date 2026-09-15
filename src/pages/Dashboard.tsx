@@ -323,7 +323,7 @@ export default function Dashboard() {
                     <div>
                       <h3 className="text-sm font-bold uppercase tracking-wider text-brand-secondary mb-3">Live Conditions</h3>
                       <div className="space-y-2">
-                        {Object.entries(blockDetail.risk.raw_features).map(([key, val]: any) => (
+                        {Object.entries(blockDetail.risk.raw_features || {}).map(([key, val]: any) => (
                           <div key={key} className="flex justify-between items-center text-sm border-b border-brand-border pb-1">
                             <span className="capitalize">{key.replace(/_/g, ' ')}</span>
                             <span className="font-mono">{typeof val === 'number' ? val.toFixed(1) : val}</span>
