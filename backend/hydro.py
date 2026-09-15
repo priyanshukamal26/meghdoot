@@ -99,9 +99,11 @@ def block_hydro(block, block_hourly, upstream_hourlies, now_idx, terrain_data):
     if total_weighted > 0.001:
         upstream_pct = round((0.65 * inflow / total_weighted) * 100)
         local_pct = 100 - upstream_pct
+        dormant = False
     else:
-        upstream_pct = 50
-        local_pct = 50
+        upstream_pct = 0
+        local_pct = 0
+        dormant = True
 
     # Per-upstream-point detail (for Row F of the dashboard)
     upstream_detail = []
@@ -136,6 +138,7 @@ def block_hydro(block, block_hourly, upstream_hourlies, now_idx, terrain_data):
         "contribution_split": {
             "upstream_pct": upstream_pct,
             "local_pct": local_pct,
+            "dormant": dormant,
         },
         "upstream_detail": upstream_detail,
         "dam_regulated": block["dam_regulated"],

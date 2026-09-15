@@ -101,7 +101,7 @@ async def refresh_all():
             risk["lag_hours"] = hydro.get("lag_hours", 0)
             risk["arrival_from"] = hydro.get("arrival_from", "")
             risk["arrival_to"] = hydro.get("arrival_to", "")
-            risk["contribution_split"] = hydro.get("contribution_split", {"upstream_pct": 50, "local_pct": 50})
+            risk["contribution_split"] = hydro.get("contribution_split", {"upstream_pct": 0, "local_pct": 0, "dormant": True})
             risk["upstream_detail"] = hydro.get("upstream_detail", [])
             risk["dam_regulated"] = hydro.get("dam_regulated", False)
             risk["dam"] = hydro.get("dam")

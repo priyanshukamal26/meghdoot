@@ -150,9 +150,11 @@ def compute_hydro_at(block, block_hourly, upstream_hourlies, now_idx, terrain_da
     if total_w > 0.001:
         upstream_pct = round((0.65 * inflow / total_w) * 100)
         local_pct = 100 - upstream_pct
+        dormant = False
     else:
-        upstream_pct = 50
-        local_pct = 50
+        upstream_pct = 0
+        local_pct = 0
+        dormant = True
 
     return {
         "inflow_index": round(inflow, 3),
@@ -164,7 +166,7 @@ def compute_hydro_at(block, block_hourly, upstream_hourlies, now_idx, terrain_da
         "lag_hours": round(lag, 1),
         "arrival_from": arrive_from.isoformat(),
         "arrival_to": arrive_to.isoformat(),
-        "contribution_split": {"upstream_pct": upstream_pct, "local_pct": local_pct},
+        "contribution_split": {"upstream_pct": upstream_pct, "local_pct": local_pct, "dormant": dormant},
         "dam_regulated": block["dam_regulated"],
         "reservoir_state_modelled": False,
     }

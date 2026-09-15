@@ -125,6 +125,24 @@ export default function Dashboard() {
     return SEVERITY_COLORS[severity as keyof typeof SEVERITY_COLORS] || SEVERITY_COLORS.Unknown;
   };
 
+  const formatDateTime = (dStr: string) => {
+    if (!dStr) return '...';
+    try {
+      const d = new Date(dStr);
+      return d.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return dStr;
+    }
+  };
+
   const formatCountdown = (arrivalFrom: string, arrivalTo: string, refTime: string) => {
     try {
       const t1 = new Date(arrivalFrom);
@@ -132,6 +150,7 @@ export default function Dashboard() {
       const now = refTime ? new Date(refTime) : new Date();
       
       const formatTime = (d: Date) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      const formatDate = (d: Date) => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
       
       const diffMs = t1.getTime() - now.getTime();
       let countdown = "";
@@ -143,7 +162,11 @@ export default function Dashboard() {
         countdown = `in ${diffH}h ${diffM}m`;
       }
       
-      return `Estimated runoff arrival — ${formatTime(t1)} to ${formatTime(t2)} (${countdown})`;
+      const dateLabel = t1.toDateString() === now.toDateString()
+        ? `Today (${formatDate(t1)})`
+        : `${formatDate(t1)}`;
+      
+      return `Estimated runoff arrival — ${dateLabel} · ${formatTime(t1)} to ${formatTime(t2)} (${countdown})`;
     } catch {
       return "Estimated runoff arrival — calculating...";
     }
@@ -174,7 +197,7 @@ export default function Dashboard() {
                 className="w-48"
               />
               <span className="font-mono text-sm text-radar-subtext">
-                {new Date(replayFrames[replayIndex]?.time || '').toLocaleString()}
+                {formatDateTime(replayFrames[replayIndex]?.time || '')}
               </span>
             </div>
           )}
@@ -189,7 +212,9 @@ export default function Dashboard() {
           <div className="flex items-center space-x-2 text-sm text-radar-subtext font-mono">
             <Clock className="w-4 h-4" />
             <span>
-              {replayMode ? 'Replay Active' : (currentData.generated_at ? new Date(currentData.generated_at).toLocaleTimeString() : '...')}
+              {replayMode 
+                ? (replayFrames[replayIndex]?.time ? formatDateTime(replayFrames[replayIndex]?.time) : 'Replay Active') 
+                : (currentData.generated_at ? formatDateTime(currentData.generated_at) : '...')}
             </span>
             {!replayMode && status && (
               <div className="group relative">
@@ -209,8 +234,8 @@ export default function Dashboard() {
             zoomControl={false}
           >
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+              attribution='&copy; <a href="https://www.esri.com/">Esri</a> &copy; OpenStreetMap'
             />
             <MapCenter />
             {blocks.map(block => (
@@ -268,6 +293,9 @@ export default function Dashboard() {
                   <div className="text-xs text-radar-subtext font-mono mt-1">
                     {blockDetail.block.district}, {blockDetail.block.state} · {blockDetail.block.river} Basin
                   </div>
+                  <div className="text-[11px] text-radar-accent font-mono mt-0.5">
+                    {replayMode ? 'Frame Timestamp:' : 'Observation:'} {formatDateTime(replayMode ? currentData.time : (blockDetail.generated_at || currentData.generated_at))}
+                  </div>
                 </div>
                 <button onClick={() => setSelectedBlockId(null)} className="p-2 hover:bg-radar-raised text-radar-subtext hover:text-radar-text rounded-full transition-colors">
                   <X className="w-6 h-6" />
@@ -311,25 +339,51 @@ export default function Dashboard() {
 
                 {/* Row C — The contribution bar */}
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-radar-subtext mb-2">Flood Source Contribution</div>
-                  <div className="flex h-6 rounded-md overflow-hidden bg-radar-raised border border-radar-border">
-                    <div 
-                      className="bg-purple-500 h-full flex items-center justify-center text-[10px] font-bold text-white transition-all" 
-                      style={{ width: `${blockDetail.risk.contribution_split.local_pct}%` }}
-                    >
-                      {blockDetail.risk.contribution_split.local_pct > 10 && `${blockDetail.risk.contribution_split.local_pct}%`}
-                    </div>
-                    <div 
-                      className="bg-blue-500 h-full flex items-center justify-center text-[10px] font-bold text-white transition-all" 
-                      style={{ width: `${blockDetail.risk.contribution_split.upstream_pct}%` }}
-                    >
-                      {blockDetail.risk.contribution_split.upstream_pct > 10 && `${blockDetail.risk.contribution_split.upstream_pct}%`}
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-xs text-radar-subtext mt-1">
-                    <span>Local rainfall {blockDetail.risk.contribution_split.local_pct}%</span>
-                    <span>Upstream catchment {blockDetail.risk.contribution_split.upstream_pct}%</span>
-                  </div>
+                  {(() => {
+                    const split = blockDetail.risk.contribution_split || { local_pct: 0, upstream_pct: 0 };
+                    const isDormant = Boolean(
+                      split.dormant || 
+                      (split.local_pct === 0 && split.upstream_pct === 0) || 
+                      (split.local_pct === 50 && split.upstream_pct === 50 && (blockDetail.risk.upstream_rain_3h || 0) === 0 && (blockDetail.risk.local_rain_3h || 0) === 0)
+                    );
+
+                    return (
+                      <>
+                        <div className="text-xs font-bold uppercase tracking-wider text-radar-subtext mb-2 flex justify-between items-center">
+                          <span>Flood Source Contribution</span>
+                          {isDormant && (
+                            <span className="text-[10px] text-radar-subtext font-normal italic">
+                              Catchment dormant (0 mm rain)
+                            </span>
+                          )}
+                        </div>
+                        {isDormant ? (
+                          <div className="h-6 rounded-md bg-radar-raised border border-radar-border flex items-center justify-center text-[11px] text-radar-subtext font-mono">
+                            No active runoff · 0% local / 0% upstream
+                          </div>
+                        ) : (
+                          <div className="flex h-6 rounded-md overflow-hidden bg-radar-raised border border-radar-border">
+                            <div 
+                              className="bg-purple-500 h-full flex items-center justify-center text-[10px] font-bold text-white transition-all" 
+                              style={{ width: `${split.local_pct}%` }}
+                            >
+                              {split.local_pct > 10 && `${split.local_pct}%`}
+                            </div>
+                            <div 
+                              className="bg-blue-500 h-full flex items-center justify-center text-[10px] font-bold text-white transition-all" 
+                              style={{ width: `${split.upstream_pct}%` }}
+                            >
+                              {split.upstream_pct > 10 && `${split.upstream_pct}%`}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex justify-between text-xs text-radar-subtext mt-1">
+                          <span>Local rainfall {isDormant ? 0 : split.local_pct}%</span>
+                          <span>Upstream catchment {isDormant ? 0 : split.upstream_pct}%</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* Row D — The comparison block */}
