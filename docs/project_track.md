@@ -89,7 +89,7 @@ repo scaffold, Neon schema, bharatlas+SRTM download, heuristic formula wired end
 [Session 4] [DONE] **Repo Scaffolded & Dependencies Installed**:
 - Scaffolded Vite + React + TypeScript in `c:\meghdoot`.
 - Installed and configured Tailwind CSS (`^3.4.17`), PostCSS, Autoprefixer, and Lucide React.
-- Configured custom brand theme colors (`bg: #0B1220`, `surface: #121B2E`, `raised: #1A2740`, `border: #25314A`, `text: #E8EDF7`, `subtext: #8B9BB8`, `accent: #5FA8D3`, `green: #3DBA6D`, `yellow: #E8C547`, `orange: #E8873D`, `red: #D4483D`) and typography (`Inter`, `Manrope`, `JetBrains Mono`).
+- Configured custom brand theme colors (`bg: #0A0A0A`, `surface: #171717`, `raised: #262626`, `border: #404040`, `text: #F5F5F5`, `subtext: #A3A3A3`, `accent: #F59E0B`, `green: #10B981`, `yellow: #F59E0B`, `orange: #F97316`, `red: #EF4444`) and typography (`Inter`, `Manrope`, `JetBrains Mono`).
 
 [Session 4] [DONE] **Meghdoot Landing Page (Initial Spec + Extensive Expansion)**:
 - Fixed Navbar with scroll-detection backdrop blur (`bg-brand-bg/90 backdrop-blur-md`), brand radar mark, navigation links, right CTA button (`Open Dashboard`), and responsive mobile drawer menu.

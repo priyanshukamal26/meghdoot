@@ -80,7 +80,7 @@ Structural pattern: fixed translucent navbar + full-viewport video hero, followe
 technical, scientific, and humanitarian operational sections (Mission, Atmospheric Triad, Real-Time
 Telemetry & XAI, 5-Stage Architecture Pipeline, Field Impact on frontline responders, Verification
 Standards, and an extensive Technical Footer). Applied strictly to Meghdoot's dark radar-console
-palette (#0B1220 base) with clear, positive, and humane exposition.
+palette (#0A0A0A base) with clear, positive, and humane exposition.
 
 ### Stack
 React + TypeScript + Vite · Tailwind CSS · `lucide-react` icons: `Radar`, `ChevronDown`,
@@ -105,22 +105,22 @@ polish task, not a blocker for building the page now.
 ### Page title
 `Meghdoot — Hyper-Local Severe Weather Early Warning`
 
-### Color tokens (Tailwind `theme.extend.colors.brand`)
-```
-bg:       #0B1220
-surface:  #121B2E
-raised:   #1A2740
-border:   #25314A
-text:     #E8EDF7
-subtext:  #8B9BB8
-accent:   #5FA8D3
-green:    #3DBA6D
-yellow:   #E8C547
-orange:   #E8873D
-red:      #D4483D
-```
+### Design Philosophy
+The tone is: **quiet, technical, credible** — a real instrument panel, not a marketing pitch. It uses a sleek neutral dark palette (#0A0A0A base) with warm amber and red accents, paired with clear, positive, and humane exposition.
 
-### Font families (Tailwind `theme.extend.fontFamily`)
+### Visual Overhaul Requirements (Completed)
+- **Glass-morphic Cards**: `backdrop-blur-xl`, `bg-gradient-to-b`, and grain textures.
+- **Cinematic Motion**: Staggered entrances and scroll-triggered reveals using `framer-motion`.
+- **Live Status Feed**: Active pulsing badges and real-time UTC clock.
+- **Warm Color Palette**: Removal of all blues/cyans. Use of pure blacks (`#0A0A0A`), warm ambers (`#F59E0B`), and vibrant mesh gradients.
+- **Animated Components**: `NumberTicker`, `RadarSweep`, and `TiltCard`.
+
+### Color tokens (Tailwind `theme.extend.colors.brand`)
+- **Backgrounds**: `bg` (#0A0A0A), `surface` (#171717), `raised` (#262626)
+- **Borders & UI**: `border` (#404040), `glow` (rgba(245, 158, 11, 0.15))
+- **Typography**: `text` (#F5F5F5), `subtext` (#A3A3A3)
+- **Severity/Status (The "Dashboard" scales)**: `green` (#10B981 - normal), `yellow` (#F59E0B - watch), `orange` (#F97316 - elevated), `red` (#EF4444 - severe)
+- **Accents**: Warm amber and reds replacing cyan and blue.
 ```
 sans: "Inter", "Manrope", system-ui, sans-serif
 mono: "JetBrains Mono", "IBM Plex Mono", monospace

@@ -20,27 +20,26 @@ body {
   color: #E8EDF7;
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ============================================
+   GLASS PANEL SYSTEM
+   ============================================ */
+
+/* Grain noise overlay for glass panels */
+.glass-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  border-radius: inherit;
 }
 
-@keyframes fade-down {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ============================================
+   KEYFRAMES
+   ============================================ */
 
 @keyframes pulse-dot {
   0%, 100% {
@@ -51,34 +50,162 @@ body {
   }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-fade-down {
-  animation: fade-down 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 .animate-pulse-dot {
   animation: pulse-dot 2.4s ease-in-out infinite;
 }
 
-.stagger-1 {
-  animation-delay: 0ms;
+/* Radar sweep rotation — used by RadarSweep component */
+.animate-radar-sweep {
+  animation: radar-sweep 3s linear infinite;
+  transform-origin: center center;
 }
 
-.stagger-2 {
-  animation-delay: 120ms;
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.stagger-3 {
-  animation-delay: 240ms;
+/* Top glow line for footer & section dividers */
+.glow-line {
+  position: relative;
 }
 
-.stagger-4 {
-  animation-delay: 360ms;
+.glow-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #5FA8D3 20%,
+    #5FA8D3 80%,
+    transparent
+  );
+  opacity: 0.4;
+  animation: border-glow 3s ease-in-out infinite;
 }
 
-.stagger-5 {
-  animation-delay: 480ms;
+@keyframes border-glow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.6; }
+}
+
+/* Floating particles background */
+.particles-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particles-bg::before,
+.particles-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(95, 168, 211, 0.15), transparent 70%);
+  animation: float 6s ease-in-out infinite;
+}
+
+.particles-bg::before {
+  width: 400px;
+  height: 400px;
+  top: 20%;
+  right: -10%;
+  animation-delay: 0s;
+}
+
+.particles-bg::after {
+  width: 300px;
+  height: 300px;
+  bottom: 10%;
+  left: -5%;
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.5; }
+  50% { transform: translateY(-20px) scale(1.05); opacity: 0.8; }
+}
+
+/* ============================================
+   VIBRANT GRADIENTS
+   ============================================ */
+
+.bg-mesh-mission {
+  background: radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.15) 0px, transparent 50%),
+              radial-gradient(at 100% 0%, rgba(249, 115, 22, 0.1) 0px, transparent 50%),
+              radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.15) 0px, transparent 50%),
+              #0A0A0A;
+}
+
+.bg-mesh-triad {
+  background: radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+              radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.1) 0px, transparent 50%),
+              #171717;
+}
+
+.bg-mesh-telemetry {
+  background: radial-gradient(at 50% 50%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
+              radial-gradient(at 0% 100%, rgba(249, 115, 22, 0.1) 0px, transparent 50%),
+              #0A0A0A;
+}
+
+.bg-mesh-architecture {
+  background: radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.15) 0px, transparent 50%),
+              radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
+              #171717;
+}
+
+.bg-mesh-impact {
+  background: radial-gradient(at 50% 0%, rgba(249, 115, 22, 0.15) 0px, transparent 50%),
+              #0A0A0A;
+}
+
+/* ============================================
+   TIMELINE CONNECTOR
+   ============================================ */
+
+.timeline-connector {
+  position: relative;
+}
+
+.timeline-connector::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 64px;
+  bottom: -16px;
+  width: 2px;
+  background: linear-gradient(to bottom, #25314A, #5FA8D3 50%, #25314A);
+  opacity: 0.4;
+}
+
+.timeline-connector:last-child::before {
+  display: none;
+}
+
+/* ============================================
+   UTILITY OVERRIDES
+   ============================================ */
+
+/* Smooth scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B1220;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #25314A;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5FA8D3;
 }
