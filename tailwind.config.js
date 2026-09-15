@@ -1,3 +1,5 @@
+import tailwindAnimate from "tailwindcss-animate"
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,6 +9,52 @@ export default {
   theme: {
     extend: {
       colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        radar: {
+          bg: '#0B1220',
+          surface: '#121B2E',
+          raised: '#1A2740',
+          border: '#25314A',
+          text: '#E8EDF7',
+          subtext: '#8B9BB8',
+          accent: '#5FA8D3',
+          green: '#3DBA6D',
+          yellow: '#E8C547',
+          orange: '#E8873D',
+          red: '#D4483D',
+        },
         brand: {
           bg: '#0A0A0A',
           surface: '#171717',
@@ -23,6 +71,11 @@ export default {
           red: '#EF4444',
           glow: 'rgba(245, 158, 11, 0.15)',
         },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
         sans: ["Inter", "Manrope", "system-ui", "sans-serif"],
@@ -55,5 +108,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [tailwindAnimate],
 }

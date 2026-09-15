@@ -1,3 +1,4 @@
+@import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -208,4 +209,36 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #5FA8D3;
+}
+
+@layer base {
+  :root, .dark {
+    --background: 220 49% 8.4%;      /* #0B1220 */
+    --foreground: 220 43% 93.9%;     /* #E8EDF7 */
+    --card: 221 44% 12.5%;           /* #121B2E */
+    --card-foreground: 220 43% 93.9%;
+    --popover: 221 44% 12.5%;
+    --popover-foreground: 220 43% 93.9%;
+    --primary: 202 58% 60%;          /* #5FA8D3 */
+    --primary-foreground: 220 49% 8.4%;
+    --secondary: 219 42% 17.6%;      /* #1A2740 */
+    --secondary-foreground: 220 43% 93.9%;
+    --muted: 219 42% 17.6%;
+    --muted-foreground: 219 25% 63.3%; /* #8B9BB8 */
+    --accent: 202 58% 60%;           /* #5FA8D3 */
+    --accent-foreground: 220 49% 8.4%;
+    --destructive: 4 63% 53.5%;      /* #D4483D */
+    --destructive-foreground: 220 43% 93.9%;
+    --border: 221 33% 21.8%;         /* #25314A */
+    --input: 221 33% 21.8%;
+    --ring: 202 58% 60%;
+    --radius: 0.5rem;
+  }
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
 }
