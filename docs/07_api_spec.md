@@ -8,136 +8,179 @@
 - Keep the schema frozen once the frontend team starts building against it (see
   `14_fallback_and_risk_playbook.md`, "API contract drift").
 
-## Routes
+# Backend API Specification (FastAPI)
 
-### `GET /api/v1/blocks`
-Returns all block polygons + metadata for the region. Static-ish, cache aggressively.
+## Design principles
+
+- Every route that depends on an external live source degrades to cached data or local fallback, never an unhandled 500.
+- Every response includes `data_mode` (`"live"` | `"cached_fallback"` | `"replay"`) and `is_baseline_heuristic: true` for scientific honesty.
+- All 12 blocks and 20 upstream catchment points are registered and monitored.
+
+---
+
+## Operational Routes (Verified Live)
+
+### 1. `GET /api/v1/blocks`
+Returns the static registry of all 12 monitored blocks with river basins and coordinates.
 ```json
-{
-  "blocks": [
-    {"id": 1, "name": "Rupnagar", "district": "Rupnagar", "state": "Punjab",
-     "centroid": [76.53, 30.97], "geometry": { "...geojson..." } }
-  ]
-}
+[
+  {
+    "id": 1,
+    "name": "Rupnagar",
+    "district": "Rupnagar",
+    "state": "Punjab",
+    "lat": 30.9686,
+    "lon": 76.5262,
+    "river": "Sutlej"
+  }
+]
 ```
 
-### `GET /api/v1/risk/current`
-Latest prediction per block, per hazard. This is what the Dashboard map polls every ~30s.
+### 2. `GET /api/v1/risk/current`
+Summary of all 12 blocks polled by the Dashboard map. Contains all three hazard scores, top hazard severity, and the dry-sky flood flag.
 ```json
 {
   "data_mode": "live",
-  "generated_at": "2026-09-08T14:30:00+05:30",
-  "risk": [
-    {"block_id": 1, "p_thunderstorm": 0.22, "p_cloudburst": 0.61,
-     "flash_flood_risk": 0.48, "severity": "Orange"}
-  ]
-}
-```
-
-### `GET /api/v1/risk/frames?block_id={id}&hours=6`
-Nowcast frames (2–6hr horizon) for a single block, used by the time-scrubber on the Block Detail
-panel.
-
-### `GET /api/v1/blocks/{id}/detail`
-Full detail for one block: current risk, last 6 timesteps of raw features, active alert (if any),
-XAI narrative.
-```json
-{
-  "block": {"id": 1, "name": "Rupnagar"},
-  "risk": {"p_thunderstorm": 0.22, "p_cloudburst": 0.61, "flash_flood_risk": 0.48},
-  "features_history": [ {"ts": "...", "cape": 2100, "cin": -30, "...": "..."} ],
-  "active_alert": {"id": 55, "severity": "Orange", "onset_estimate": "2026-09-08T17:00:00+05:30"},
-  "xai": {"top_features": [{"feature": "cape", "contribution": 0.41}],
-          "narrative": "Triggered primarily by rapid CAPE buildup combined with low-level convergence."}
-}
-```
-
-### `GET /api/v1/alerts?state=Punjab&severity=Orange`
-Active alerts feed, filterable. Used by the Alerts page.
-
-### `GET /api/v1/alerts/{id}`
-Single alert detail (for the Alert Detail modal).
-
-### `GET /api/v1/geocode?q={query}`
-Proxy over Open-Meteo's Geocoding API. Prioritizes Indian locations (`country_code == "IN"`).
-Used by the Dashboard search bar to resolve place names/PIN codes to coordinates.
-```json
-{
-  "data_mode": "live",
-  "results": [
-    {"name": "Ludhiana", "admin1": "Punjab", "country": "India",
-     "latitude": 30.901, "longitude": 75.8573, "postal_code": "141001"}
-  ]
-}
-```
-
-### `GET /api/v1/analyze?lat={lat}&lon={lon}&name={optional display name}`
-On-demand full-pipeline endpoint for a specific coordinate. Fetches live data, derives features, runs heuristic risk scoring, and generates an XAI narrative (both trigger narrative and AI overview) using Groq. Includes a `within_validated_core` honesty flag.
-```json
-{
-  "data_mode": "live",
-  "location": {"name": "Ludhiana, Punjab", "lat": 30.901, "lon": 75.8573},
-  "generated_at": "2026-09-15T18:42:00+05:30",
-  "within_validated_core": true,
-  "risk": {
-    "p_thunderstorm": 0.31, "p_cloudburst": 0.58,
-    "flash_flood_risk": 0.44, "severity": "Orange",
-    "is_baseline_heuristic": true
-  },
-  "features_snapshot": {"cape": 1980, "cin": -22, "humidity_proxy": 41.2,
-    "cloud_trend": -3.1, "rainfall_recent": 6.4, "pressure_trend_3h": 14.2,
-    "gusts": 6.4},
-  "xai": {
-    "top_features": [{"feature": "cape", "contribution": 0.38}],
-    "trigger_narrative": "Elevated risk driven by rapid CAPE buildup.",
-    "ai_overview": "Conditions over Ludhiana have intensified over the past two hours..."
+  "generated_at": "2026-09-16T06:01:30.369620Z",
+  "is_baseline_heuristic": true,
+  "blocks": {
+    "1": {
+      "thunderstorm_score": 0.22,
+      "thunderstorm_severity": "Green",
+      "cloudburst_score": 0.15,
+      "cloudburst_severity": "Green",
+      "flash_flood_score": 0.58,
+      "flash_flood_severity": "Orange",
+      "top_hazard": "Flash Flood",
+      "top_hazard_severity": "Orange",
+      "dry_sky": true,
+      "is_baseline_heuristic": true
+    }
   }
 }
 ```
 
-### `GET /api/v1/replay/{event_name}/frames`
-e.g. `event_name = "aug_2025_punjab_floods"`. Returns the full pre-baked frame sequence from
-`replay_events` — the frontend steps through this locally, no further backend calls needed once
-loaded, so Replay mode survives total loss of connectivity mid-demo.
-
-### `GET /api/v1/status`
-Powers the Data Status page — last successful/failed poll per source, latency, whether each source
-is currently in fallback mode.
+### 3. `GET /api/v1/blocks/{block_id}/detail`
+Full detail for the slide-in Block Detail Panel (Rows A–G):
+- Risk breakdown across thunderstorm, cloudburst, flash flood
+- Upstream catchment telemetry and rainfall ($mm/3h$)
+- Lumped kinematic-wave arrival window (`arrival_from`, `arrival_to`)
+- Contribution split (`local_rain_contrib`, `upstream_inflow_contrib`)
+- Exposure counts (`population`, `health_centers`, `schools`)
+- 3-row comparison block (forecast rain, threshold alert, Meghdoot lead-time)
+- Plain-English XAI meteorological narrative (Groq LLM or template fallback)
 ```json
 {
-  "sources": [
-    {"name": "open-meteo", "status": "ok", "last_success": "...", "latency_ms": 210},
-    {"name": "imd", "status": "degraded", "last_success": "...", "note": "IP whitelist pending"},
-    {"name": "mosdac", "status": "not_configured"}
+  "block": {
+    "id": 1,
+    "name": "Rupnagar",
+    "district": "Rupnagar",
+    "state": "Punjab",
+    "lat": 30.9686,
+    "lon": 76.5262,
+    "river": "Sutlej"
+  },
+  "data_mode": "live",
+  "generated_at": "2026-09-16T06:01:30.369620Z",
+  "is_baseline_heuristic": true,
+  "risk": {
+    "top_hazard": "Flash Flood",
+    "top_hazard_severity": "Orange",
+    "dry_sky": true,
+    "local_rain_3h": 0.0,
+    "upstream_rain_3h": 64.2,
+    "arrival_from": "16:10",
+    "arrival_to": "17:10",
+    "exposure_total": 1240,
+    "narrative": "Severe dry-sky flash flood threat: heavy upstream rainfall in Himachal...",
+    "comparison": {
+      "forecast_rain_24h": "12.4 mm",
+      "imd_color_scale": "Green (<64.5 mm)",
+      "threshold_alert": "None",
+      "meghdoot_alert": "Orange (Arrival 16:10–17:10)"
+    }
+  }
+}
+```
+
+### 4. `GET /api/v1/alerts`
+Flat array of active alerts for emergency responders (severity $\ge$ Orange).
+```json
+{
+  "data_mode": "live",
+  "generated_at": "2026-09-16T06:01:30.369620Z",
+  "is_baseline_heuristic": true,
+  "alerts": [
+    {
+      "block_id": 1,
+      "name": "Rupnagar",
+      "district": "Rupnagar",
+      "state": "Punjab",
+      "river": "Sutlej",
+      "severity": "Orange",
+      "hazard": "Flash Flood",
+      "dry_sky": true,
+      "flash_flood_risk": 0.65,
+      "arrival_from": "16:10",
+      "arrival_to": "17:10",
+      "exposure_total": 1240,
+      "narrative": "Runoff from Shivalik catchments arriving in ~3h 20m.",
+      "data_mode": "live",
+      "is_baseline_heuristic": true
+    }
   ]
 }
 ```
 
-### `POST /api/v1/internal/poll` *(internal, cron-triggered, not called by frontend)*
-Triggers one poll cycle. Called by GitHub Actions or Render's own cron, not exposed publicly
-without an internal auth token.
-
-## Cron jobs
-
-| Job | Cadence | Action |
-|---|---|---|
-| `poll_open_meteo` | every 15–30 min | fetch, write `weather_snapshots`, build `features` |
-| `poll_imd` | every 15 min | fetch, write `weather_snapshots`; on failure, log to `api_health_log` and skip, don't block the pipeline |
-| `run_model` | after each poll cycle | read latest `features`, write `predictions` |
-| `run_flood_overlay` | after each `run_model` | write `flash_flood_risk` into `predictions` |
-| `evaluate_alerts` | after each `run_model` | threshold check, write new `alerts`, trigger XAI generation for new alerts only |
-
-## Fallback logic (applies to every external call)
-
-```text
-try:
-    response = call_live_source()
-    cache.store(source, response)
-    return response, data_mode="live"
-except (Timeout, HTTPError, ConnectionError):
-    cached = cache.get_last_known_good(source)
-    if cached and cached.age < MAX_STALE_AGE:
-        return cached, data_mode="cached_fallback"
-    else:
-        return None, data_mode="unavailable"   # never raise to the frontend as a 500
+### 5. `GET /api/v1/status`
+Health check and data currency monitor:
+```json
+{
+  "status": "ok",
+  "data_mode": "live",
+  "last_success": "2026-09-16T06:01:30.369620Z",
+  "age_seconds": 16.6,
+  "is_baseline_heuristic": true
+}
 ```
+
+### 6. `GET /api/v1/replay/aug_2025_punjab_floods/frames`
+Serves pre-computed historical frames from `replay_data.json` for the August 2025 disaster reconstruction. Feeds the timeline scrubber with zero network latency.
+
+### 7. `GET /api/v1/bihar/flood`
+Real-time river basin telemetry across Bihar (Kosi, Gandak, Bagmati, Burhi Gandak, etc.):
+- Discharge ($m^3/s$)
+- Water level vs danger level margins
+- Hydro-trend and danger category
+```json
+{
+  "data_mode": "live",
+  "generated_at": "2026-09-16T09:15:00Z",
+  "basins": [
+    {
+      "river": "Kosi",
+      "station": "Birpur / Baltara",
+      "discharge_cumec": 4250.0,
+      "status": "Warning",
+      "trend": "Rising"
+    }
+  ]
+}
+```
+
+---
+
+## Background Caching & Poller Logic
+
+```python
+# cache.py background loop
+async def refresh_loop():
+    while True:
+        try:
+            await refresh_all()
+        except Exception as e:
+            print(f"Poller error: {e}")
+            STATE["data_mode"] = "cached_fallback"
+        await asyncio.sleep(300) # 5-minute cadence
+```
+

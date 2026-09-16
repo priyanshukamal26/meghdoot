@@ -1,46 +1,41 @@
 # Frontend — Pages, Flows, Design System
 
-## Site map
+## Stack & Architecture
+
+- **Engine**: Vite + React 19 + TypeScript
+- **Styling**: Tailwind CSS with custom dual token palette (`brand.*` for Landing, `radar.*` for Dashboard)
+- **Mapping**: Leaflet + `react-leaflet` with Carto dark basemap
+
+## Site Map & Routes (`src/App.tsx`)
 
 ```mermaid
 flowchart TD
-    LAND[Landing] --> DASH[Dashboard/Map]
-    DASH --> BLOCKDET[Block Detail - slide-in panel]
-    DASH --> ALERTPAGE[Alerts Page] --> ALERTMODAL[Alert Detail Modal]
-    DASH --> REPLAY[Replay Mode]
-    DASH --> ABOUT[About/Methodology]
-    DASH --> STATUS[Data Status Page]
-    DASH --> ONBOARD[Onboarding tour - first visit only]
-    DASH --> LEGEND[Legend/layer toggle popup]
+    LAND[Landing: /] --> DASH[Dashboard: /dashboard]
+    DASH --> BLOCKDET[Block Detail: slide-in panel Rows A-G]
+    DASH --> REPLAY[Replay Mode: August 2025 timeline scrubber]
+    DASH --> EVID[Evidence Scorecard: /evidence]
+    LAND --> EVID
 ```
 
-## Pages
+## Implemented Pages
 
-- **Landing (`/`)** — fixed navbar + full-viewport video hero. Full detailed spec below. No login wall.
-- **Dashboard (`/dashboard`)** — full-bleed Leaflet map, block polygons colored by risk. Mutually-
-  exclusive layer toggle (Thunderstorm/Cloudburst/Flash Flood). Persistent mode badge
-  (**LIVE** / **REPLAY: [event]**) — always visible, never ambiguous. Ticking "last updated" timestamp.
-- **Block Detail** (slide-in panel, not a URL) — risk per hazard, 6-timestep sparkline, XAI
-  narrative ("top triggers"), active-alert badge if any.
-- **Alerts (`/alerts`)** — filterable list, severity-sorted, "view on map" jumps Dashboard to block.
-- **Replay Mode** — same map/toggles, data entirely from `replay_events` (zero live calls). Event
-  picker: Aug 2025 Punjab floods (default) / Jul 2023 North India floods. **This must survive wifi
-  physically off — treat as the demo's hard floor.**
-- **About/Methodology (`/about`)** — for judges: PS traceability, data-source honesty labels,
-  the GRU-vs-ConvLSTM architecture decision stated plainly, XAI approach, North-India training
-  caveat against all-India map coverage, MOSDAC/Open-Meteo proxy status.
-- **Data Status (`/status`)** — live health per source (Open-Meteo/MOSDAC) from `/api/v1/status`
-  — doubles as judge-facing transparency and team debugging tool.
+- **Landing (`/`)** — full-viewport video hero, mission narrative, atmospheric triad hazard heads, live telemetry scenario console, full architecture diagram, and live Bihar river basin telemetry monitor with radar sweep animation.
+- **Dashboard (`/dashboard`)** — full-bleed Leaflet map displaying 12 monitored blocks, colored by active hazard layer (Thunderstorm / Cloudburst / Flash Flood). Mode toggle (**LIVE** vs. **REPLAY: August 2025** with time-scrubber). Ticking live timestamp.
+- **Block Detail Panel** (slide-in panel on `/dashboard`) — Rows A–G:
+  - Row A: Block name, river basin, top hazard, dry-sky badge
+  - Row B: Upstream catchment telemetry (3h rainfall)
+  - Row C: Estimated arrival countdown & window
+  - Row D: Runoff contribution split bar
+  - Row E: Vulnerable exposure register (people, schools, health centers)
+  - Row F: 3-row comparison block (forecast rain, threshold alert, Meghdoot lead time)
+  - Row G: Meteorological XAI narrative (Groq LLM + physical fallback)
+- **Evidence Scorecard (`/evidence`)** — static lead-time scorecard rendering `leadtime.json` over the August 2025 Punjab flood reconstruction. Demonstrates verified lead-time gains (e.g. +3h 40m for Rupnagar) with honest zero/negative entries for un-impacted blocks. Operates completely offline.
 
-## Popups/modals
-Lightweight block popup (single click, before full panel) · Alert Detail Modal (click alert row) ·
-Onboarding tour (first visit, 3–4 steps, client-side flag) · Legend/layer-toggle panel (persistent
-bottom-left button).
+## User Flows
 
-## User flows
-**Officer**: Landing → Dashboard → clicks Orange block → reads XAI + onset → checks Alerts page.
-**Judge**: Landing (5s pitch) → Dashboard (live badge proves realness) → clicks block (XAI proves
-rigor) → team switches to Replay with wifi off (proves resilience) → About/Status if they want depth.
+**Officer**: Landing → Dashboard → clicks Orange block → checks arrival clock + upstream inflow → reviews vulnerable exposure counts → coordinates evacuation.
+**Judge**: Landing (the thesis) → Dashboard (live badge + dry-sky flood demo) → clicks block (XAI + kinematic routing) → Replay mode with wifi off (offline resilience) → `/evidence` scorecard (receipts).
+
 
 ---
 

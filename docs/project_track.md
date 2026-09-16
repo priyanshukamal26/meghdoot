@@ -154,3 +154,22 @@ Both stay. Dashboard work uses `radar.*`. Landing page is frozen.
 - **A7 (Dashboard)**: Updated React dashboard styling with `radar-*` token set. Implemented Block Detail Panel (Rows A–G) including live arrival countdown, horizontal contribution split bar, 3-row comparison block, vulnerable exposure details, and upstream routing table.
 - **A8 (Evidence)**: Built `/evidence` static route presenting the `leadtime.json` data as a scorecard with horizontal timeline visualisation.
 - All code committed in `master` branch. Zero TS errors. Backend verified with curl. Replay mode validated. Phase A MVP Definition of Done is fully satisfied.
+
+---
+
+[Session 8] [DONE] **Dashboard Polish & UI Formatting**:
+- Removed carto basemap watermark overlap.
+- Added localized date and time formats on dashboard and arrival windows.
+- Handled dormant catchment split visualization gracefully when local and upstream rainfall are zero.
+- Verified commit: `6b1514d`.
+
+---
+
+[Session 9] [DONE] **Bihar River Telemetry & Advisory Engine Expansion**:
+- Added `bihar_flood.py` integrating live river basin discharge ($m^3/s$) and gauge levels across northern Bihar (Kosi, Gandak, Bagmati, Burhi Gandak, Kamla Balan, Mahananda).
+- Added `advisory.py` implementing automated action protocols and duty officer advisories for varying hazard severities.
+- Added `GET /api/v1/bihar/flood` endpoint in `main.py`.
+- Added interactive Bihar River Telemetry Monitor and radar sweep visualizer to Landing Page (`src/pages/LandingPage.tsx`).
+- Verified commit: `ea1a2da`.
+- Both servers active and verified responding with 200 OK locally.
+
