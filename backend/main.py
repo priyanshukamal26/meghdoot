@@ -17,9 +17,14 @@ import asyncio
 from datetime import datetime, timezone
 import json
 import os
+from dotenv import load_dotenv
+
+# Load .env file if present
+load_dotenv()
 
 from .blocks import BLOCKS
 from .cache import STATE, refresh_all, refresh_loop
+from .bihar_flood import fetch_bihar_flood_telemetry
 
 app = FastAPI(title="Meghdoot Sure-Shot Backend")
 
@@ -179,6 +184,16 @@ def get_status():
         "age_seconds": age_seconds,
         "is_baseline_heuristic": True,
     }
+
+
+@app.get("/api/v1/bihar/flood")
+async def get_bihar_flood(force_refresh: bool = False):
+    """Live Bihar river basin and flood telemetry: discharge (m³/s), gauge danger margins, and trend."""
+    try:
+        return await fetch_bihar_flood_telemetry(force_refresh=force_refresh)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch Bihar flood telemetry: {str(e)}")
+
 
 
 if __name__ == "__main__":

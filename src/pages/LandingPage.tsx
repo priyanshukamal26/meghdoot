@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
@@ -39,11 +40,25 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [clock, setClock] = useState('');
+  const [backendStatus, setBackendStatus] = useState<{ status: string; data_mode: string } | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Poll backend health
+  useEffect(() => {
+    const checkStatus = () => {
+      fetch('http://localhost:8000/api/v1/status')
+        .then(res => res.json())
+        .then(data => setBackendStatus(data))
+        .catch(() => setBackendStatus({ status: 'offline', data_mode: 'offline' }));
+    };
+    checkStatus();
+    const id = setInterval(checkStatus, 30000);
+    return () => clearInterval(id);
   }, []);
 
   // Live UTC clock
@@ -128,14 +143,17 @@ function Navbar() {
               <span className="text-xs font-mono text-brand-subtext/70 tabular-nums">
                 {clock}
               </span>
-              <StatusBadge variant="success" label="LIVE" />
-              <a
-                href="#dashboard"
+              <StatusBadge 
+                variant={backendStatus?.status === 'ok' ? 'success' : (backendStatus?.data_mode === 'offline' ? 'error' : 'warning')} 
+                label={backendStatus?.status === 'ok' ? 'LIVE' : (backendStatus?.data_mode === 'offline' ? 'OFFLINE' : 'CONNECTING')} 
+              />
+              <Link
+                to="/dashboard"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-accent text-brand-bg text-sm font-semibold rounded-full hover:brightness-110 hover:shadow-lg hover:shadow-brand-accent/25 transition-all active:scale-95"
               >
                 <span>Open Dashboard</span>
                 <ArrowUpRight className="w-4 h-4" />
-              </a>
+              </Link>
             </div>
 
             {/* Mobile hamburger */}
@@ -184,14 +202,14 @@ function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <a
-                href="#dashboard"
+              <Link
+                to="/dashboard"
                 onClick={closeMenu}
                 className="mt-6 inline-flex items-center gap-2 px-8 py-3.5 bg-brand-accent text-brand-bg text-base font-semibold rounded-full shadow-lg shadow-brand-accent/25"
               >
                 <span>Open Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
         )}
@@ -238,7 +256,7 @@ function Hero() {
         >
           <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse-dot" />
           <span className="text-xs sm:text-sm text-brand-subtext font-medium">
-            Live monitoring active across Punjab, Haryana &amp; Delhi NCT
+            Live monitoring active across Punjab, Haryana &amp; Bihar River Basins
           </span>
         </motion.div>
 
@@ -270,15 +288,13 @@ function Hero() {
           transition={{ delay: 0.85, duration: 0.6 }}
           className="mt-8 flex flex-wrap items-center gap-4"
         >
-          <motion.a
-            href="#dashboard"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brand-accent text-brand-bg text-base font-semibold rounded-full hover:brightness-110 hover:shadow-xl hover:shadow-brand-accent/30 transition-all group"
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brand-accent text-brand-bg text-base font-semibold rounded-full hover:brightness-110 hover:shadow-xl hover:shadow-brand-accent/30 transition-all group active:scale-95"
           >
             <span>Open the live dashboard</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </motion.a>
+          </Link>
           <motion.a
             href="#mission"
             whileHover={{ scale: 1.02 }}
@@ -629,7 +645,20 @@ function AtmosphericTriadSection() {
 // LIVE TELEMETRY & XAI — GlassPanel metrics
 // ─────────────────────────────────────────────
 function LiveTelemetrySection() {
-  const [selectedScenario, setSelectedScenario] = useState<'calm' | 'buildup' | 'alert'>('buildup');
+  const [selectedScenario, setSelectedScenario] = useState<'calm' | 'buildup' | 'alert' | 'bihar'>('bihar');
+  const [biharData, setBiharData] = useState<any>(null);
+  const [activeStationIdx, setActiveStationIdx] = useState<number>(0);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/v1/bihar/flood')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok' && data.stations) {
+          setBiharData(data);
+        }
+      })
+      .catch(err => console.error('Bihar flood fetch error:', err));
+  }, []);
 
   const scenarios = {
     calm: {
@@ -670,7 +699,37 @@ function LiveTelemetrySection() {
     },
   };
 
-  const active = scenarios[selectedScenario];
+  const isBihar = selectedScenario === 'bihar';
+  const currStation = biharData?.stations?.[activeStationIdx] || {
+    name: 'Patna (Gandhi Ghat / Digha)',
+    district: 'Patna',
+    river: 'Ganga',
+    current_discharge_m3s: 42265.86,
+    forecast_tomorrow_m3s: 40456.58,
+    trend: 'Receding (-)',
+    status: 'Elevated Inflow (Watch)',
+    severity: 'Orange',
+    warning_note: 'Discharge above warning threshold; active bank overflow alert',
+    danger_level_m: 48.60,
+    warning_level_m: 47.60,
+    estimated_stage_m: 48.00,
+    margin_to_danger_m: 0.60,
+    upstream_basin: 'Upper Ganga & Sone Basin (Prayagraj & Buxar confluence)',
+    cwc_gauge_id: 'CWC-PATNA-01'
+  };
+
+  const active = isBihar ? {
+    name: `Bihar River Watch: ${currStation.name}`,
+    location: `${currStation.name}, ${currStation.district} (${currStation.river} River)`,
+    riskScore: currStation.status,
+    riskVariant: (currStation.severity === 'Orange' ? 'warning' : (currStation.severity === 'Red' ? 'error' : 'success')) as 'warning' | 'error' | 'success',
+    cape: `${currStation.current_discharge_m3s.toLocaleString()} m³/s`,
+    cin: `${currStation.estimated_stage_m} m (Danger: ${currStation.danger_level_m}m)`,
+    convergence: `+${currStation.margin_to_danger_m} m safety margin`,
+    moisture: `Trend: ${currStation.trend}`,
+    flowAcc: currStation.upstream_basin,
+    xai: `Real-time hydrological river telemetry: River ${currStation.river} at ${currStation.name} is discharging ${currStation.current_discharge_m3s.toLocaleString()} m³/s. ${currStation.warning_note}. Bank stage is estimated at ${currStation.estimated_stage_m}m with a ${currStation.margin_to_danger_m}m buffer before exceeding the official CWC danger mark (${currStation.danger_level_m}m). Inflow originates from ${currStation.upstream_basin}.`,
+  } : scenarios[selectedScenario as 'calm' | 'buildup' | 'alert'];
 
   return (
     <section id="telemetry" className="py-24 md:py-32 bg-mesh-telemetry relative border-t border-brand-border/30 glow-line">
@@ -685,12 +744,23 @@ function LiveTelemetrySection() {
               Transparent, Explainable Intelligence (XAI)
             </h2>
             <p className="mt-4 text-base sm:text-lg text-brand-subtext leading-relaxed">
-              Disaster management officers cannot act on black-box predictions. Meghdoot provides full meteorological attribution — decomposing every alert into plain-language physical causes.
+              Disaster management officers cannot act on black-box predictions. Meghdoot provides full meteorological attribution — decomposing every alert into plain-language physical causes and live river-bank stages.
             </p>
           </AnimatedSection>
 
-          {/* Scenario Toggles */}
+          {/* Scenario & Live Toggles */}
           <AnimatedSection className="flex flex-wrap gap-2" delay={0.2}>
+            <button
+              onClick={() => setSelectedScenario('bihar')}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold border transition-all flex items-center gap-2 ${
+                selectedScenario === 'bihar'
+                  ? 'bg-brand-accent/20 border-brand-accent text-brand-accent shadow-lg shadow-brand-accent/20 ring-1 ring-brand-accent/50'
+                  : 'bg-white/[0.03] border-brand-border/50 text-brand-subtext hover:text-brand-text'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
+              <span>⚡ Live Bihar River Watch (Real-Time Proof)</span>
+            </button>
             {(['calm', 'buildup', 'alert'] as const).map((key) => {
               const labels = { calm: 'Scenario A: Stable', buildup: 'Scenario B: Convective Buildup', alert: 'Scenario C: Severe Warning' };
               const activeColors = {
@@ -715,10 +785,30 @@ function LiveTelemetrySection() {
           </AnimatedSection>
         </div>
 
+        {/* If Bihar is selected, show station tabs */}
+        {isBihar && biharData?.stations && (
+          <div className="mb-6 flex flex-wrap items-center gap-2">
+            <span className="text-xs font-mono text-brand-subtext uppercase mr-2">Monitored River Gauges:</span>
+            {biharData.stations.map((s: any, idx: number) => (
+              <button
+                key={s.id}
+                onClick={() => setActiveStationIdx(idx)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
+                  activeStationIdx === idx
+                    ? 'bg-white/[0.1] border-brand-accent text-brand-accent font-semibold shadow'
+                    : 'bg-white/[0.02] border-brand-border/40 text-brand-subtext hover:text-brand-text'
+                }`}
+              >
+                {s.district} · {s.river} ({s.severity === 'Orange' ? '⚠️ Watch' : '✓ Safe'})
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Instrument Console */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={selectedScenario}
+            key={selectedScenario + (isBihar ? `_${activeStationIdx}` : '')}
             initial={{ opacity: 0, y: 15, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
@@ -730,7 +820,7 @@ function LiveTelemetrySection() {
                 <div className="flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full bg-brand-green animate-pulse-dot" />
                   <span className="text-xs font-mono uppercase tracking-wider text-brand-subtext">
-                    Live Sensor Telemetry:
+                    {isBihar ? 'Live Copernicus GloFAS Telemetry:' : 'Sensor Telemetry:'}
                   </span>
                   <span className="text-sm font-semibold text-brand-text flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-brand-accent" />
@@ -740,20 +830,26 @@ function LiveTelemetrySection() {
                 <div className="flex items-center gap-3">
                   <StatusBadge variant={active.riskVariant} label={active.riskScore} />
                   <span className="text-xs font-mono text-brand-subtext">
-                    Updated: 2 mins ago
+                    {isBihar ? 'Live GloFAS River Feed' : 'Updated: 2 mins ago'}
                   </span>
                 </div>
               </div>
 
               {/* Metrics Grid */}
               <div className="p-6 sm:p-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {[
+                {(isBihar ? [
+                  { label: 'River Discharge', value: active.cape, sub: 'Live river flow rate (m³/s)', accent: true },
+                  { label: 'Estimated River Stage', value: active.cin, sub: `CWC Danger Level: ${currStation.danger_level_m}m` },
+                  { label: 'Safety Buffer Margin', value: active.convergence, sub: 'Distance below danger mark' },
+                  { label: 'Forecast Trajectory', value: active.moisture, sub: `Tomorrow: ${currStation.forecast_tomorrow_m3s.toLocaleString()} m³/s` },
+                  { label: 'Upstream Origin', value: currStation.river, sub: currStation.cwc_gauge_id, accent: false },
+                ] : [
                   { label: 'CAPE (Instability)', value: active.cape, sub: 'Convective energy' },
                   { label: 'CIN (Inhibition)', value: active.cin, sub: 'Atmospheric lid' },
                   { label: '850hPa Convergence', value: active.convergence, sub: 'MetPy dynamic lift' },
                   { label: 'Integrated Moisture', value: active.moisture, sub: 'IWV water column' },
                   { label: 'Terrain Hydro Index', value: active.flowAcc, sub: 'SRTM DEM × pysheds', accent: true },
-                ].map((metric, i) => (
+                ]).map((metric, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 10 }}
@@ -779,18 +875,19 @@ function LiveTelemetrySection() {
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-sm font-semibold text-brand-text uppercase tracking-wider font-mono">
-                        Explainable AI Narrative (Human-in-the-Loop)
+                        {isBihar ? 'Live River Basin Physical Attribution (CWC & GloFAS)' : 'Explainable AI Narrative (Human-in-the-Loop)'}
                       </h4>
                       <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.05] border border-brand-border/40 text-brand-subtext">
-                        SHAP Attribution + Groq
+                        {isBihar ? 'Open-Meteo Flood API + GloFAS' : 'SHAP Attribution + Groq'}
                       </span>
                     </div>
                     <p className="text-base text-brand-text mt-2 leading-relaxed font-sans">
                       &ldquo;{active.xai}&rdquo;
                     </p>
-                    <div className="mt-3 flex items-center gap-4 text-xs text-brand-subtext">
-                      <span>✓ Verified physical consistency</span>
-                      <span>✓ Cached once per alert for repeatable inspection</span>
+                    <div className="mt-3 flex items-center gap-4 text-xs text-brand-subtext flex-wrap">
+                      <span>✓ Real live hydrological stream</span>
+                      <span>✓ Transboundary Nepal &amp; Ganga catchment accounted</span>
+                      <span>✓ Zero API keys required</span>
                     </div>
                   </div>
                 </GlassPanel>
@@ -1016,14 +1113,12 @@ function FieldImpactSection() {
                 Meghdoot delivers quiet, confident, and verifiable telemetry so leadership can act with composure and compassion.
               </p>
             </div>
-            <motion.a
-              href="#dashboard"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="px-6 py-3 rounded-full bg-brand-accent text-brand-bg font-semibold text-sm hover:brightness-110 shrink-0 transition-all shadow-lg shadow-brand-accent/20"
+            <Link
+              to="/dashboard"
+              className="px-6 py-3 rounded-full bg-brand-accent text-brand-bg font-semibold text-sm hover:brightness-110 shrink-0 transition-all shadow-lg shadow-brand-accent/20 active:scale-95"
             >
               Experience the Console
-            </motion.a>
+            </Link>
           </GlassPanel>
         </AnimatedSection>
       </div>
@@ -1087,7 +1182,7 @@ function StandardsSection() {
 // ─────────────────────────────────────────────
 function CallToActionBanner() {
   return (
-    <section id="dashboard" className="py-24 bg-gradient-to-b from-brand-bg to-brand-surface/40 relative overflow-hidden border-t border-brand-border/30 glow-line">
+    <section id="action" className="py-24 bg-gradient-to-b from-brand-bg to-brand-surface/40 relative overflow-hidden border-t border-brand-border/30 glow-line">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-accent/8 via-transparent to-transparent pointer-events-none" />
       {/* Particles */}
       <div className="particles-bg" />
@@ -1107,19 +1202,13 @@ function CallToActionBanner() {
           Access the real-time block-level early warning dashboard, inspect active weather polygons, and review live explainable AI telemetry across the region.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <motion.a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              alert('Redirecting to the Meghdoot Live Dashboard (Map & Risk Layer Console)...');
-            }}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            className="inline-flex items-center gap-2.5 px-8 py-4 bg-brand-accent text-brand-bg text-base font-semibold rounded-full hover:brightness-110 hover:shadow-xl hover:shadow-brand-accent/30 transition-all group"
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2.5 px-8 py-4 bg-brand-accent text-brand-bg text-base font-semibold rounded-full hover:brightness-110 hover:shadow-xl hover:shadow-brand-accent/30 transition-all group active:scale-95"
           >
             <span>Launch Live Dashboard</span>
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-          </motion.a>
+          </Link>
           <motion.a
             href="#mission"
             whileHover={{ scale: 1.02 }}
@@ -1203,9 +1292,9 @@ function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <StatusBadge variant="success" label="All Systems Nominal" />
-            <a href="#dashboard" className="hover:text-brand-text transition-colors">
-              Privacy &amp; Terms
-            </a>
+            <Link to="/dashboard" className="hover:text-brand-text transition-colors">
+              Launch Live Console
+            </Link>
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ from .fetch import fetch_all
 from .features import extract_features
 from .heuristic import compute_risk
 from .hydro import compute_all as compute_hydro
+from .advisory import compute_advisory
 
 STATE = {"data_mode": "starting_up", "generated_at": None, "blocks": {}, "hydro": {}}
 
@@ -125,6 +126,9 @@ async def refresh_all():
             # Exposure
             risk["exposure"] = EXPOSURE.get(bid, [])
             risk["exposure_total"] = sum(f["pop"] for f in risk["exposure"])
+
+            # Action Advisory (deterministic — no LLM)
+            risk["advisory"] = compute_advisory(block, risk)
 
             # Comparison rows (for the three-row comparison block)
             local_rain_1h = 0.0

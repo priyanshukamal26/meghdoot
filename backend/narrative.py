@@ -3,9 +3,14 @@ import asyncio
 from groq import AsyncGroq
 import json
 
-# Initialize client if API key is present
-api_key = os.environ.get("GROQ_API_KEY")
-client = AsyncGroq(api_key=api_key) if api_key else None
+from dotenv import load_dotenv
+
+def get_client():
+    load_dotenv()
+    api_key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not api_key or api_key == "your_groq_api_key_here" or api_key.startswith("your_"):
+        return None
+    return AsyncGroq(api_key=api_key)
 
 async def generate_narrative(block_name, risk_data):
     top_hazard = risk_data.get("top_hazard", "risk")
@@ -36,7 +41,7 @@ async def generate_narrative(block_name, risk_data):
                         "content": prompt,
                     }
                 ],
-                model="llama3-8b-8192",
+                model="qwen/qwen3.8-27b",
                 temperature=0.5,
                 max_tokens=60,
             ),
@@ -80,7 +85,7 @@ Respond ONLY with valid JSON. Do not include markdown formatting or backticks.
                         "content": prompt,
                     }
                 ],
-                model="llama3-8b-8192",
+                model="qwen/qwen3.8-27b",
                 temperature=0.3,
                 max_tokens=250,
                 response_format={"type": "json_object"}
